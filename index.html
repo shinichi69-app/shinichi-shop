@@ -12,8 +12,25 @@
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, getDocs, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged,
+      updateProfile 
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc, 
+      getDoc, 
+      collection, 
+      getDocs, 
+      addDoc, 
+      updateDoc, 
+      deleteDoc 
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCGG103Vc3C7xhgW-4XQRU4K0OzuotLx-I",
@@ -24,14 +41,29 @@
       appId: "1:403564723749:web:c9fb83e920ec2cbfb049cc"
     };
 
-    const app = initializeApp(firebaseConfig);
-    window.firebaseAuth = getAuth(app);
-    window.firebaseDb = getFirestore(app);
-    window.firebaseFunctions = { 
-      createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, 
-      doc, setDoc, getDoc, collection, getDocs, addDoc, updateDoc, deleteDoc 
-    };
-    console.log("✅ Firebase initialized");
+    try {
+      const app = initializeApp(firebaseConfig);
+      window.firebaseAuth = getAuth(app);
+      window.firebaseDb = getFirestore(app);
+      window.firebaseFunctions = { 
+        createUserWithEmailAndPassword, 
+        signInWithEmailAndPassword, 
+        signOut, 
+        onAuthStateChanged, 
+        updateProfile, 
+        doc, 
+        setDoc, 
+        getDoc, 
+        collection, 
+        getDocs, 
+        addDoc, 
+        updateDoc, 
+        deleteDoc 
+      };
+      console.log("✅ Firebase initialized successfully");
+    } catch (error) {
+      console.error("❌ Firebase initialization error:", error);
+    }
   </script>
 
   <style>
@@ -57,16 +89,12 @@
     .product-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -15px rgba(245, 158, 11, 0.25); }
     .cat-pill { transition: all 0.2s ease; }
     .cat-pill.active { background: linear-gradient(135deg, #f59e0b, #d97706); color: #18181b; border-color: transparent; }
-    
-    /* Admin badge */
     .admin-badge { background: linear-gradient(135deg, #ef4444, #dc2626); }
   </style>
 </head>
 <body class="bg-zinc-950 text-slate-100 min-h-screen overflow-x-hidden selection:bg-amber-500 selection:text-black">
 
-  <!-- ========================================== -->
-  <!-- LOGIN PAGE                                 -->
-  <!-- ========================================== -->
+  <!-- LOGIN PAGE -->
   <div id="loginPage" class="min-h-screen flex flex-col">
     <div id="loginOverlay" class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/90 backdrop-blur-xl transform -translate-y-full opacity-0 pointer-events-none">
       <div class="w-full max-w-md p-8">
@@ -145,11 +173,8 @@
     </main>
   </div>
 
-  <!-- ========================================== -->
-  <!-- DASHBOARD PAGE                             -->
-  <!-- ========================================== -->
+  <!-- DASHBOARD PAGE -->
   <div id="dashboardPage" class="min-h-screen hidden">
-    
     <header class="sticky top-0 z-40 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800/60">
       <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between gap-4">
         <div class="flex items-center gap-2.5">
@@ -162,22 +187,9 @@
           </div>
         </div>
 
-        <div class="hidden md:flex flex-1 max-w-md mx-4">
-          <div class="relative w-full">
-            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-            <input id="searchInput" type="text" placeholder="ค้นหาสินค้าหรือบริการ..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
-          </div>
-        </div>
-
         <div class="flex items-center gap-2">
-          <!-- Admin Button (แสดงเฉพาะ Admin) -->
           <button id="adminBtn" class="hidden relative p-2.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl transition-all group" title="จัดการสินค้า (Admin)">
-            <svg class="w-5 h-5 text-red-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          </button>
-
-          <button id="wishlistBtn" class="relative p-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-xl transition-all">
-            <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-            <span id="wishlistCount" class="absolute -top-1 -right-1 bg-amber-500 text-zinc-950 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
+            <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
           </button>
 
           <div class="flex items-center gap-2 pl-2 border-l border-zinc-800">
@@ -188,878 +200,278 @@
               </div>
               <p id="displayEmail" class="text-[10px] text-zinc-500 leading-tight truncate max-w-[120px]">email@...</p>
             </div>
-            <button id="logoutBtn" class="p-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl transition-all group" title="ออกจากระบบ">
-              <svg class="w-4 h-4 text-red-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            <button id="logoutBtn" class="p-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl transition-all">
+              <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
             </button>
           </div>
-        </div>
-      </div>
-
-      <div class="md:hidden px-4 pb-3">
-        <div class="relative">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-          <input id="searchInputMobile" type="text" placeholder="ค้นหาสินค้า..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500">
         </div>
       </div>
     </header>
 
-    <!-- Hero Banner -->
-    <section class="max-w-7xl mx-auto px-4 md:px-6 pt-6 pb-4">
-      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-500/20 via-zinc-900 to-zinc-950 border border-amber-500/20 p-6 md:p-10">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-        <div class="relative z-10 max-w-xl">
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full text-amber-400 text-xs font-mono mb-4">
-            <span class="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></span>
-            NEW COLLECTION 2026
-          </div>
-          <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 leading-tight">
-            สินค้าและบริการ<br>
-            <span class="text-amber-400">คุณภาพระดับพรีเมียม</span>
-          </h2>
-          <p class="text-zinc-400 text-sm md:text-base mb-5">เลือกชมสินค้าหลากหลายหมวดหมู่ พร้อมบริการหลังการขายที่ดูแลคุณตลอดการใช้งาน</p>
-          <div class="flex flex-wrap gap-3">
-            <button onclick="scrollToProducts()" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-semibold text-sm rounded-xl transition-all shadow-lg shadow-amber-500/30">
-              เลือกชมสินค้า
-            </button>
-            <button onclick="scrollToProducts()" class="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-sm rounded-xl transition-all border border-zinc-700">
-              ติดต่อเรา
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Categories -->
-    <section class="max-w-7xl mx-auto px-4 md:px-6 pb-4">
-      <div class="flex items-center gap-2 overflow-x-auto pb-2" id="categoryContainer"></div>
-    </section>
-
-    <!-- Products Grid -->
-    <section id="productsSection" class="max-w-7xl mx-auto px-4 md:px-6 pb-12">
-      <div class="flex items-center justify-between mb-5">
-        <div>
-          <h3 class="text-xl font-bold text-white">สินค้าทั้งหมด</h3>
-          <p id="productCount" class="text-xs text-zinc-500 font-mono mt-0.5">กำลังโหลด...</p>
-        </div>
-        <select id="sortSelect" class="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-300 focus:outline-none focus:border-amber-500">
-          <option value="default">เรียงตาม: แนะนำ</option>
-          <option value="price-asc">ราคา: ต่ำ → สูง</option>
-          <option value="price-desc">ราคา: สูง → ต่ำ</option>
-          <option value="name">ชื่อ: A-Z</option>
-        </select>
-      </div>
-
-      <div id="productsGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4"></div>
-
-      <div id="emptyState" class="hidden text-center py-16">
-        <svg class="w-16 h-16 text-zinc-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        <p class="text-zinc-500 text-sm">ไม่พบสินค้าที่ค้นหา</p>
-      </div>
-    </section>
-
-    <footer class="border-t border-zinc-800/60 bg-zinc-950/50">
-      <div class="max-w-7xl mx-auto px-4 md:px-6 py-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div>
-            <div class="flex items-center gap-2 mb-3">
-              <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
-                <svg class="w-4 h-4 text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-              </div>
-              <span class="font-bold text-white">Shinichi Shop</span>
-            </div>
-            <p class="text-xs text-zinc-500 leading-relaxed">แพลตฟอร์มขายสินค้าและบริการคุณภาพ พร้อมดูแลคุณตลอดการใช้งาน</p>
-          </div>
-          <div>
-            <h4 class="text-xs font-semibold text-white mb-3 uppercase tracking-wider">ช่องทางติดต่อ</h4>
-            <ul class="space-y-2 text-xs text-zinc-400">
-              <li class="flex items-center gap-2">📱 LINE: @shinichishop</li>
-              <li class="flex items-center gap-2">📞 089-123-4567</li>
-              <li class="flex items-center gap-2">✉️ contact@shinichi.shop</li>
-            </ul>
-          </div>
-          <div>
-            <h4 class="text-xs font-semibold text-white mb-3 uppercase tracking-wider">เวลาทำการ</h4>
-            <ul class="space-y-2 text-xs text-zinc-400">
-              <li>จันทร์ - ศุกร์: 09:00 - 18:00</li>
-              <li>เสาร์: 10:00 - 16:00</li>
-              <li>อาทิตย์: ปิดทำการ</li>
-            </ul>
-          </div>
-        </div>
-        <div class="pt-6 border-t border-zinc-800/60 text-center text-xs text-zinc-600">
-          © 2026 Shinichi Shop. All rights reserved.
-        </div>
-      </div>
-    </footer>
+    <main class="max-w-7xl mx-auto px-4 md:px-6 py-12 text-center">
+      <div class="text-6xl mb-4">🎉</div>
+      <h2 class="text-3xl font-bold text-white mb-2">เข้าสู่ระบบสำเร็จ!</h2>
+      <p class="text-zinc-400">ยินดีต้อนรับสู่ Shinichi Shop</p>
+    </main>
   </div>
 
-  <!-- ========================================== -->
-  <!-- PRODUCT DETAIL MODAL                       -->
-  <!-- ========================================== -->
-  <div id="productModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4 opacity-0">
-    <div id="productModalContent" class="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-transform">
-      <div class="relative">
-        <div id="modalImage" class="w-full h-64 md:h-80 bg-gradient-to-br from-zinc-800 to-zinc-950 flex items-center justify-center text-6xl">📦</div>
-        <button id="closeModalBtn" class="absolute top-4 right-4 w-10 h-10 bg-black/60 hover:bg-black/80 backdrop-blur rounded-full flex items-center justify-center text-white transition-all">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-        <div id="modalCategory" class="absolute top-4 left-4 px-3 py-1 bg-amber-500/90 backdrop-blur text-zinc-950 text-xs font-bold rounded-full"></div>
-      </div>
-
-      <div class="p-6 md:p-8">
-        <div class="flex items-start justify-between gap-4 mb-4">
-          <h2 id="modalTitle" class="text-2xl font-bold text-white leading-tight"></h2>
-          <button id="modalWishlistBtn" class="flex-shrink-0 p-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-xl transition-all">
-            <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-          </button>
-        </div>
-
-        <div class="flex items-baseline gap-2 mb-5">
-          <span id="modalPrice" class="text-3xl font-bold text-amber-400"></span>
-          <span class="text-sm text-zinc-500">บาท</span>
-        </div>
-
-        <div class="flex items-center gap-3 mb-5 text-xs">
-          <span class="flex items-center gap-1.5 text-zinc-400">
-            <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.293z"/></svg>
-            <span id="modalRating" class="text-white font-semibold"></span>
-          </span>
-          <span class="text-zinc-600">•</span>
-          <span id="modalStock" class="text-zinc-400"></span>
-        </div>
-
-        <p id="modalDescription" class="text-sm text-zinc-400 leading-relaxed mb-6"></p>
-        <div id="modalFeatures" class="grid grid-cols-2 gap-2 mb-6"></div>
-
-        <div class="space-y-2.5">
-          <p class="text-xs font-mono text-zinc-500 uppercase tracking-wider mb-2">สนใจสินค้านี้? ติดต่อเราได้เลย</p>
-          <a href="https://line.me/ti/p/@shinichishop" target="_blank" class="w-full flex items-center justify-center gap-2 bg-[#06C755] hover:bg-[#05b34d] text-white font-semibold py-3.5 rounded-xl transition-all active:scale-95">
-            <span>ทัก LINE เพื่อสั่งซื้อ</span>
-          </a>
-          <a href="tel:0891234567" class="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold py-3.5 rounded-xl transition-all active:scale-95 border border-zinc-700">
-            <span>โทร: 089-123-4567</span>
-          </a>
-          <button id="addToWishlistBtn2" class="w-full flex items-center justify-center gap-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-semibold py-3.5 rounded-xl transition-all active:scale-95 border border-amber-500/30">
-            <span>บันทึกรายการที่สนใจ</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========================================== -->
-  <!-- ADMIN PANEL MODAL                          -->
-  <!-- ========================================== -->
-  <div id="adminModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4 opacity-0">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col transform scale-95 transition-transform" id="adminModalContent">
-      <!-- Header -->
-      <div class="flex items-center justify-between p-5 border-b border-zinc-800 bg-gradient-to-r from-red-500/10 to-transparent">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-red-500/20 border border-red-500/30 flex items-center justify-center">
-            <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          </div>
-          <div>
-            <h3 class="font-bold text-white text-lg">จัดการสินค้า</h3>
-            <p class="text-xs text-zinc-500 font-mono">Admin Panel • เพิ่ม/แก้ไข/ลบ สินค้า</p>
-          </div>
-        </div>
-        <button id="closeAdminBtn" class="p-2 hover:bg-zinc-800 rounded-lg transition-all">
-          <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>
-
-      <!-- Body -->
-      <div class="flex-1 overflow-y-auto p-5">
-        <!-- Add/Edit Form -->
-        <div class="bg-zinc-950/50 border border-zinc-800 rounded-2xl p-5 mb-5">
-          <h4 id="formTitle" class="text-sm font-bold text-white mb-4 flex items-center gap-2">
-            <span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>
-            <span id="formTitleText">เพิ่มสินค้าใหม่</span>
-          </h4>
-          
-          <form id="productForm" class="space-y-4">
-            <input type="hidden" id="editProductId">
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">ชื่อสินค้า *</label>
-                <input type="text" id="formName" required class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="เช่น หูฟังไร้สาย Pro">
-              </div>
-              <div>
-                <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">หมวดหมู่ *</label>
-                <select id="formCategory" required class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
-                  <option value="electronics">📱 อิเล็กทรอนิกส์</option>
-                  <option value="services">🛠️ บริการ</option>
-                  <option value="fashion">👕 แฟชั่น</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">ราคา (บาท) *</label>
-                <input type="number" id="formPrice" required min="0" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="2490">
-              </div>
-              <div>
-                <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">Emoji/Icon *</label>
-                <input type="text" id="formEmoji" required maxlength="4" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="🎧">
-              </div>
-              <div>
-                <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">สต็อก *</label>
-                <input type="number" id="formStock" required min="0" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="15">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">คะแนน (0-5) *</label>
-              <input type="number" id="formRating" required min="0" max="5" step="0.1" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="4.8">
-            </div>
-
-            <div>
-              <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">คำอธิบาย *</label>
-              <textarea id="formDescription" required rows="3" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 resize-none" placeholder="รายละเอียดสินค้า..."></textarea>
-            </div>
-
-            <div>
-              <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">จุดเด่น (คั่นด้วยจุลภาค , ) *</label>
-              <input type="text" id="formFeatures" required class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="Bluetooth 5.3, แบต 30 ชม., ตัดเสียงรบกวน">
-            </div>
-
-            <div class="flex gap-2 pt-2">
-              <button type="submit" id="submitProductBtn" class="flex-1 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2.5 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                <span id="submitBtnText">เพิ่มสินค้า</span>
-              </button>
-              <button type="button" id="cancelEditBtn" class="hidden px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold rounded-xl transition-all border border-zinc-700">
-                ยกเลิก
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <!-- Products List -->
-        <div>
-          <h4 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-            <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
-            สินค้าทั้งหมด (<span id="adminProductCount">0</span>)
-          </h4>
-          <div id="adminProductsList" class="space-y-2 max-h-80 overflow-y-auto"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast -->
-  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] hidden">
-    <div class="bg-zinc-900 border border-amber-500/30 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-2">
-      <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-      <span id="toastMessage" class="text-sm font-medium"></span>
-    </div>
-  </div>
-
-  <!-- JavaScript Logic -->
   <script type="module">
-    const waitForFirebase = () => new Promise((resolve) => {
+    console.log("🚀 Script started");
+
+    const waitForFirebase = () => new Promise((resolve, reject) => {
+      let attempts = 0;
+      const maxAttempts = 50;
       const check = () => {
-        if (window.firebaseAuth && window.firebaseFunctions) resolve();
-        else setTimeout(check, 100);
+        attempts++;
+        if (window.firebaseAuth && window.firebaseFunctions) {
+          console.log("✅ Firebase ready");
+          resolve();
+        } else if (attempts >= maxAttempts) {
+          console.error("❌ Firebase initialization timeout");
+          reject(new Error("Firebase initialization timeout"));
+        } else {
+          setTimeout(check, 100);
+        }
       };
       check();
     });
 
-    await waitForFirebase();
+    try {
+      await waitForFirebase();
 
-    const auth = window.firebaseAuth;
-    const db = window.firebaseDb;
-    const { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, 
-            doc, setDoc, getDoc, collection, getDocs, addDoc, updateDoc, deleteDoc } = window.firebaseFunctions;
+      const auth = window.firebaseAuth;
+      const db = window.firebaseDb;
+      const { 
+        createUserWithEmailAndPassword, 
+        signInWithEmailAndPassword, 
+        signOut, 
+        onAuthStateChanged, 
+        updateProfile,
+        doc,
+        setDoc
+      } = window.firebaseFunctions;
 
-    // ==========================================
-    // ⚠️ ADMIN EMAIL - แก้ไขอีเมลของคุณที่นี่
-    // ==========================================
-    const ADMIN_EMAIL = "popsteptep555@gmail.com";
+      const ADMIN_EMAIL = "popsteptep555@gmail.com";
 
-    // ==========================================
-    // DEFAULT PRODUCTS (ใช้ตอน Firestore ว่าง)
-    // ==========================================
-    const defaultProducts = [
-      { name: "หูฟังไร้สาย Pro", category: "electronics", price: 2490, rating: 4.8, stock: 15, emoji: "🎧", description: "หูฟังบลูทูธคุณภาพเสียงระดับ Hi-Fi แบตเตอรี่ใช้งานได้นาน 30 ชั่วโมง ตัดเสียงรบกวนอัจฉริยะ", features: ["Bluetooth 5.3", "แบต 30 ชม.", "ตัดเสียงรบกวน", "กันน้ำ IPX5"] },
-      { name: "สมาร์ทวอทช์ X1", category: "electronics", price: 3990, rating: 4.9, stock: 8, emoji: "⌚", description: "สมาร์ทวอทช์จอ AMOLED ติดตามสุขภาพครบครัน วัดอัตราการเต้นหัวใจ SpO2 และ GPS ในตัว", features: ["จอ AMOLED", "GPS ในตัว", "วัด SpO2", "กันน้ำ 5ATM"] },
-      { name: "คีย์บอร์ด Mechanical", category: "electronics", price: 1890, rating: 4.7, stock: 22, emoji: "⌨️", description: "คีย์บอร์ด Mechanical สวิตช์ Blue เสียงคลิกชัดเจน RGB 16.8 ล้านสี", features: ["สวิตช์ Blue", "RGB 16.8M สี", "Hot-swappable", "USB-C"] },
-      { name: "เมาส์ Gaming Pro", category: "electronics", price: 1290, rating: 4.6, stock: 30, emoji: "🖱️", description: "เมาส์เกมเมอร์ DPI สูงสุด 25,600 น้ำหนักเบาเพียง 58 กรัม", features: ["DPI 25,600", "น้ำหนัก 58g", "Optical Switch", "RGB"] },
-      { name: "ลำโพง Bluetooth", category: "electronics", price: 2190, rating: 4.5, stock: 12, emoji: "🔊", description: "ลำโพงพกพาเสียงเบสแน่น กันน้ำ IPX7 ใช้งานกลางแจ้งได้สบาย", features: ["กันน้ำ IPX7", "แบต 20 ชม.", "เสียง 360°", "TWS Pairing"] },
-      { name: "กล้อง Mirrorless", category: "electronics", price: 24900, rating: 4.9, stock: 5, emoji: "📷", description: "กล้องมิเรอร์เลสเซนเซอร์ APS-C 26MP วิดีโอ 4K 60fps", features: ["26MP APS-C", "วิดีโอ 4K60", "IBIS 5 แกน", "WiFi/Bluetooth"] },
-      { name: "บริการออกแบบโลโก้", category: "services", price: 3500, rating: 5.0, stock: 99, emoji: "🎨", description: "บริการออกแบบโลโก้มืออาชีพ รวมแก้ไข 3 ครั้ง ไฟล์ครบทุกฟอร์แมต", features: ["แก้ไข 3 ครั้ง", "ไฟล์ครบรูปแบบ", "ส่งงาน 5 วัน", "ลิขสิทธิ์เต็ม"] },
-      { name: "บริการทำเว็บไซต์", category: "services", price: 15000, rating: 4.9, stock: 99, emoji: "💻", description: "รับทำเว็บไซต์ Responsive Design รองรับทุกอุปกรณ์ รวมโฮสติ้ง 1 ปี", features: ["Responsive", "โฮสติ้ง 1 ปี", "ระบบหลังบ้าน", "SEO พื้นฐาน"] },
-      { name: "บริการถ่ายภาพสินค้า", category: "services", price: 5000, rating: 4.8, stock: 99, emoji: "📸", description: "บริการถ่ายภาพสินค้ามืออาชีพ สตูพร้อมอุปกรณ์ครบ", features: ["สตูมืออาชีพ", "20 รูป HD", "รีทัชรูป", "ส่งงาน 7 วัน"] },
-      { name: "บริการปรึกษาธุรกิจ", category: "services", price: 2500, rating: 4.7, stock: 99, emoji: "💼", description: "บริการให้คำปรึกษาธุรกิจแบบ 1-on-1 กับผู้เชี่ยวชาญ", features: ["1-on-1", "10 ชั่วโมง", "รายงานสรุป", "ติดตามผล 1 เดือน"] },
-      { name: "กระเป๋าสะพาย Premium", category: "fashion", price: 1690, rating: 4.6, stock: 18, emoji: "👜", description: "กระเป๋าสะพายหนังแท้คุณภาพพรีเมียม ดีไซน์มินิมอล", features: ["หนังแท้", "ใส่โน้ตบุ๊ก 15\"", "หลายช่องซิป", "รับประกัน 1 ปี"] },
-      { name: "รองเท้า Sneakers", category: "fashion", price: 2890, rating: 4.8, stock: 25, emoji: "👟", description: "รองเท้าผ้าใบสไตล์มินิมอล วัสดุน้ำหนักเบา พื้นนุ่มใส่สบาย", features: ["น้ำหนักเบา", "พื้นนุ่ม", "ระบายอากาศ", "หลายไซส์"] },
-    ];
+      // UI Elements
+      const loginOverlay = document.getElementById('loginOverlay');
+      const wallSwitch = document.getElementById('wallSwitch');
+      const switchKnob = document.getElementById('switchKnob');
+      const switchTrackGlow = document.getElementById('switchTrackGlow');
+      const switchLed = document.getElementById('switchLed');
+      const switchLabel = document.getElementById('switchLabel');
+      const loginTabBtn = document.getElementById('loginTabBtn');
+      const signupTabBtn = document.getElementById('signupTabBtn');
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      const errorMsg = document.getElementById('errorMsg');
 
-    const categories = [
-      { id: "all", name: "ทั้งหมด", icon: "🏪" },
-      { id: "electronics", name: "อิเล็กทรอนิกส์", icon: "📱" },
-      { id: "services", name: "บริการ", icon: "🛠️" },
-      { id: "fashion", name: "แฟชั่น", icon: "👕" },
-    ];
+      function showError(msg) { 
+        console.error("❌ Error:", msg);
+        errorMsg.textContent = msg; 
+        errorMsg.classList.remove('hidden'); 
+        setTimeout(() => errorMsg.classList.add('hidden'), 5000); 
+      }
+      function hideError() { errorMsg.classList.add('hidden'); }
 
-    // ==========================================
-    // STATE
-    // ==========================================
-    let products = [];
-    let currentCategory = "all";
-    let searchQuery = "";
-    let sortBy = "default";
-    let wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
-    let currentUser = null;
-    let isAdmin = false;
+      // Tab Switching
+      loginTabBtn.addEventListener('click', () => {
+        loginTabBtn.classList.add('active'); 
+        signupTabBtn.classList.remove('active');
+        loginForm.classList.remove('hidden'); 
+        signupForm.classList.add('hidden'); 
+        hideError();
+      });
+      signupTabBtn.addEventListener('click', () => {
+        signupTabBtn.classList.add('active'); 
+        loginTabBtn.classList.remove('active');
+        signupForm.classList.remove('hidden'); 
+        loginForm.classList.add('hidden'); 
+        hideError();
+      });
 
-    // ==========================================
-    // FIRESTORE: โหลด/บันทึกสินค้า
-    // ==========================================
-    async function loadProductsFromFirestore() {
-      try {
-        const snapshot = await getDocs(collection(db, "products"));
-        if (snapshot.empty) {
-          // ถ้ายังไม่มีข้อมูล ให้ seed ข้อมูลเริ่มต้น
-          console.log("📦 Seeding default products...");
-          for (const p of defaultProducts) {
-            await addDoc(collection(db, "products"), { ...p, createdAt: new Date().toISOString() });
-          }
-          return [...defaultProducts.map((p, i) => ({ id: `seed_${i}`, ...p }))];
+      // Wall Switch Toggle
+      function toggleSwitch() {
+        const isOn = switchKnob.classList.toggle('on');
+        switchTrackGlow.classList.toggle('opacity-0', !isOn);
+        switchLed.classList.toggle('bg-red-900/50', !isOn);
+        switchLed.classList.toggle('bg-amber-400', isOn);
+        switchLed.classList.toggle('shadow-[0_0_10px_rgba(251,191,36,0.8)]', isOn);
+        switchLabel.innerHTML = isOn 
+          ? `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]"></span> ระบบพร้อมใช้งาน`
+          : `<span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span> แตะสวิตช์เพื่อเข้าสู่ระบบ`;
+        switchLabel.classList.toggle('animate-pulse', !isOn);
+        switchLabel.classList.toggle('text-zinc-500', !isOn);
+        switchLabel.classList.toggle('text-amber-400', isOn);
+
+        if (isOn) {
+          loginOverlay.classList.remove('pointer-events-none', 'opacity-0', '-translate-y-full');
+          loginOverlay.classList.add('translate-y-0', 'opacity-100');
+          setTimeout(() => document.getElementById('loginEmail').focus(), 600);
+        } else {
+          closeLogin();
         }
-        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      } catch (e) {
-        console.error("Error loading products:", e);
-        return defaultProducts.map((p, i) => ({ id: `local_${i}`, ...p }));
-      }
-    }
-
-    async function saveProductToFirestore(product) {
-      const { id, ...data } = product;
-      if (id && !id.startsWith('seed_') && !id.startsWith('local_')) {
-        await updateDoc(doc(db, "products", id), data);
-      } else {
-        const ref = await addDoc(collection(db, "products"), { ...data, createdAt: new Date().toISOString() });
-        return ref.id;
-      }
-    }
-
-    async function deleteProductFromFirestore(id) {
-      if (id && !id.startsWith('seed_') && !id.startsWith('local_')) {
-        await deleteDoc(doc(db, "products", id));
-      }
-    }
-
-    // ==========================================
-    // LOGIN PAGE LOGIC
-    // ==========================================
-    const loginOverlay = document.getElementById('loginOverlay');
-    const wallSwitch = document.getElementById('wallSwitch');
-    const switchKnob = document.getElementById('switchKnob');
-    const switchTrackGlow = document.getElementById('switchTrackGlow');
-    const switchLed = document.getElementById('switchLed');
-    const switchLabel = document.getElementById('switchLabel');
-    const loginTabBtn = document.getElementById('loginTabBtn');
-    const signupTabBtn = document.getElementById('signupTabBtn');
-    const loginForm = document.getElementById('loginForm');
-    const signupForm = document.getElementById('signupForm');
-    const errorMsg = document.getElementById('errorMsg');
-
-    function showError(msg) { errorMsg.textContent = msg; errorMsg.classList.remove('hidden'); setTimeout(() => errorMsg.classList.add('hidden'), 5000); }
-    function hideError() { errorMsg.classList.add('hidden'); }
-
-    loginTabBtn.addEventListener('click', () => {
-      loginTabBtn.classList.add('active'); signupTabBtn.classList.remove('active');
-      loginForm.classList.remove('hidden'); signupForm.classList.add('hidden'); hideError();
-    });
-    signupTabBtn.addEventListener('click', () => {
-      signupTabBtn.classList.add('active'); loginTabBtn.classList.remove('active');
-      signupForm.classList.remove('hidden'); loginForm.classList.add('hidden'); hideError();
-    });
-
-    function toggleSwitch() {
-      const isOn = switchKnob.classList.toggle('on');
-      switchTrackGlow.classList.toggle('opacity-0', !isOn);
-      switchLed.classList.toggle('bg-red-900/50', !isOn);
-      switchLed.classList.toggle('bg-amber-400', isOn);
-      switchLed.classList.toggle('shadow-[0_0_10px_rgba(251,191,36,0.8)]', isOn);
-      switchLabel.innerHTML = isOn 
-        ? `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]"></span> ระบบพร้อมใช้งาน`
-        : `<span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span> แตะสวิตช์เพื่อเข้าสู่ระบบ`;
-      switchLabel.classList.toggle('animate-pulse', !isOn);
-      switchLabel.classList.toggle('text-zinc-500', !isOn);
-      switchLabel.classList.toggle('text-amber-400', isOn);
-
-      if (isOn) {
-        loginOverlay.classList.remove('pointer-events-none', 'opacity-0', '-translate-y-full');
-        loginOverlay.classList.add('translate-y-0', 'opacity-100');
-        setTimeout(() => document.getElementById('loginEmail').focus(), 600);
-      } else {
-        closeLogin();
-      }
-    }
-
-    function closeLogin() {
-      switchKnob.classList.remove('on');
-      switchTrackGlow.classList.add('opacity-0');
-      switchLed.classList.add('bg-red-900/50');
-      switchLed.classList.remove('bg-amber-400', 'shadow-[0_0_10px_rgba(251,191,36,0.8)]');
-      switchLabel.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span> แตะสวิตช์เพื่อเข้าสู่ระบบ`;
-      switchLabel.classList.add('animate-pulse', 'text-zinc-500');
-      switchLabel.classList.remove('text-amber-400');
-      loginOverlay.classList.add('opacity-0', '-translate-y-full');
-      loginOverlay.classList.remove('translate-y-0', 'opacity-100');
-      loginForm.reset(); signupForm.reset(); hideError();
-      setTimeout(() => loginOverlay.classList.add('pointer-events-none'), 500);
-    }
-
-    wallSwitch.addEventListener('click', toggleSwitch);
-    document.getElementById('closeLoginBtn').addEventListener('click', closeLogin);
-
-    window.handleLogin = async function() {
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
-      const btn = document.getElementById('loginBtn');
-      if (!email || !password) { showError('กรุณากรอกอีเมลและรหัสผ่าน'); return; }
-      btn.disabled = true; btn.innerHTML = `<div class="spinner"></div> <span>กำลังเข้าสู่ระบบ...</span>`; hideError();
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-      } catch (e) {
-        let msg = e.code === 'auth/user-not-found' ? 'ไม่พบบัญชีนี้' : e.code === 'auth/wrong-password' ? 'รหัสผ่านไม่ถูกต้อง' : e.code === 'auth/invalid-credential' ? 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' : `Error: ${e.code}`;
-        showError(msg);
-        btn.disabled = false; btn.innerHTML = `<span>เข้าสู่ระบบ</span>`;
-      }
-    };
-
-    window.handleSignup = async function() {
-      const username = document.getElementById('signupUsername').value.trim();
-      const email = document.getElementById('signupEmail').value.trim();
-      const password = document.getElementById('signupPassword').value;
-      const btn = document.getElementById('signupBtn');
-      if (!username || !email || !password) { showError('กรุณากรอกข้อมูลให้ครบ'); return; }
-      if (password.length < 6) { showError('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'); return; }
-      btn.disabled = true; btn.innerHTML = `<div class="spinner"></div> <span>กำลังสมัคร...</span>`; hideError();
-      try {
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        await updateProfile(cred.user, { displayName: username });
-        try { await setDoc(doc(db, "users", cred.user.uid), { username, email, createdAt: new Date().toISOString() }); } catch(e){}
-      } catch (e) {
-        let msg = e.code === 'auth/email-already-in-use' ? 'อีเมลนี้ถูกใช้แล้ว' : e.code === 'auth/weak-password' ? 'รหัสผ่านอ่อนเกินไป' : `Error: ${e.code}`;
-        showError(msg);
-        btn.disabled = false; btn.innerHTML = `<span>สมัครสมาชิก</span>`;
-      }
-    };
-
-    // ==========================================
-    // DASHBOARD LOGIC
-    // ==========================================
-    const loginPage = document.getElementById('loginPage');
-    const dashboardPage = document.getElementById('dashboardPage');
-
-    function renderCategories() {
-      const container = document.getElementById('categoryContainer');
-      container.innerHTML = categories.map(c => `
-        <button onclick="window.setCategory('${c.id}')" class="cat-pill flex-shrink-0 flex items-center gap-2 px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm font-medium ${currentCategory === c.id ? 'active' : 'text-zinc-400 hover:text-white hover:border-zinc-700'}">
-          <span>${c.icon}</span><span>${c.name}</span>
-        </button>
-      `).join('');
-    }
-
-    function getFilteredProducts() {
-      let list = products;
-      if (currentCategory !== 'all') list = list.filter(p => p.category === currentCategory);
-      if (searchQuery) {
-        const q = searchQuery.toLowerCase();
-        list = list.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
-      }
-      if (sortBy === 'price-asc') list = [...list].sort((a,b) => a.price - b.price);
-      else if (sortBy === 'price-desc') list = [...list].sort((a,b) => b.price - a.price);
-      else if (sortBy === 'name') list = [...list].sort((a,b) => a.name.localeCompare(b.name, 'th'));
-      return list;
-    }
-
-    function renderProducts() {
-      const list = getFilteredProducts();
-      const grid = document.getElementById('productsGrid');
-      const empty = document.getElementById('emptyState');
-      const count = document.getElementById('productCount');
-      
-      count.textContent = `${list.length} รายการ`;
-      
-      if (list.length === 0) {
-        grid.innerHTML = '';
-        empty.classList.remove('hidden');
-        return;
-      }
-      empty.classList.add('hidden');
-      
-      grid.innerHTML = list.map(p => {
-        const inWishlist = wishlist.includes(p.id);
-        return `
-          <div class="product-card bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden cursor-pointer group" onclick="window.openProduct('${p.id}')">
-            <div class="relative aspect-square bg-gradient-to-br from-zinc-800 to-zinc-950 flex items-center justify-center text-6xl">
-              ${p.emoji}
-              <button onclick="event.stopPropagation(); window.toggleWishlist('${p.id}')" class="absolute top-2 right-2 w-8 h-8 bg-black/60 backdrop-blur hover:bg-black/80 rounded-full flex items-center justify-center transition-all">
-                <svg class="w-4 h-4 ${inWishlist ? 'text-red-500 fill-current' : 'text-white'}" fill="${inWishlist ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-              </button>
-            </div>
-            <div class="p-3 md:p-4">
-              <div class="text-[10px] text-amber-500/80 font-mono uppercase mb-1">${categories.find(c=>c.id===p.category)?.name || ''}</div>
-              <h4 class="text-sm font-semibold text-white mb-2 line-clamp-2 leading-tight">${p.name}</h4>
-              <div class="flex items-center justify-between">
-                <span class="text-base font-bold text-amber-400">฿${Number(p.price).toLocaleString()}</span>
-                <div class="flex items-center gap-1 text-xs text-zinc-500">
-                  <svg class="w-3 h-3 text-amber-500 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.293z"/></svg>
-                  <span>${p.rating}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    window.setCategory = (id) => { currentCategory = id; renderCategories(); renderProducts(); };
-    window.scrollToProducts = () => document.getElementById('productsSection').scrollIntoView({ behavior: 'smooth' });
-
-    // Product Modal
-    let currentProductId = null;
-    const modal = document.getElementById('productModal');
-    const modalContent = document.getElementById('productModalContent');
-
-    window.openProduct = (id) => {
-      const p = products.find(x => x.id === id);
-      if (!p) return;
-      currentProductId = id;
-      document.getElementById('modalImage').textContent = p.emoji;
-      document.getElementById('modalTitle').textContent = p.name;
-      document.getElementById('modalPrice').textContent = Number(p.price).toLocaleString();
-      document.getElementById('modalDescription').textContent = p.description;
-      document.getElementById('modalCategory').textContent = categories.find(c=>c.id===p.category)?.name || '';
-      document.getElementById('modalRating').textContent = p.rating;
-      document.getElementById('modalStock').textContent = p.stock > 20 ? 'มีสินค้าพร้อมส่ง' : `เหลือ ${p.stock} ชิ้น`;
-      
-      const features = document.getElementById('modalFeatures');
-      features.innerHTML = (p.features || []).map(f => `
-        <div class="flex items-center gap-2 px-3 py-2 bg-zinc-800/50 border border-zinc-800 rounded-lg text-xs text-zinc-300">
-          <svg class="w-3.5 h-3.5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-          <span>${f}</span>
-        </div>
-      `).join('');
-
-      updateModalWishlistIcon();
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      requestAnimationFrame(() => {
-        modal.classList.remove('opacity-0');
-        modalContent.classList.remove('scale-95');
-        modalContent.classList.add('scale-100');
-      });
-    };
-
-    function closeModal() {
-      modal.classList.add('opacity-0');
-      modalContent.classList.remove('scale-100');
-      modalContent.classList.add('scale-95');
-      setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
-    }
-    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-
-    function updateModalWishlistIcon() {
-      const btn = document.getElementById('modalWishlistBtn');
-      const inList = wishlist.includes(currentProductId);
-      btn.innerHTML = `<svg class="w-5 h-5 ${inList ? 'text-red-500 fill-current' : 'text-zinc-400'}" fill="${inList ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>`;
-    }
-
-    window.toggleWishlist = (id) => {
-      const idx = wishlist.indexOf(id);
-      if (idx > -1) {
-        wishlist.splice(idx, 1);
-        showToast('ลบออกจากรายการที่สนใจแล้ว');
-      } else {
-        wishlist.push(id);
-        showToast('บันทึกรายการที่สนใจแล้ว ❤️');
-      }
-      localStorage.setItem('wishlist', JSON.stringify(wishlist));
-      renderProducts();
-      updateModalWishlistIcon();
-      updateWishlistUI();
-    };
-
-    document.getElementById('modalWishlistBtn').addEventListener('click', () => { if (currentProductId) window.toggleWishlist(currentProductId); });
-    document.getElementById('addToWishlistBtn2').addEventListener('click', () => { if (currentProductId && !wishlist.includes(currentProductId)) window.toggleWishlist(currentProductId); });
-
-    function updateWishlistUI() {
-      const count = document.getElementById('wishlistCount');
-      const total = document.getElementById('wishlistTotal');
-      const items = document.getElementById('wishlistItems');
-      
-      if (wishlist.length > 0) { count.textContent = wishlist.length; count.classList.remove('hidden'); } 
-      else { count.classList.add('hidden'); }
-      total.textContent = `${wishlist.length} รายการ`;
-
-      if (wishlist.length === 0) {
-        items.innerHTML = `<div class="text-center py-12"><svg class="w-16 h-16 text-zinc-700 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg><p class="text-zinc-500 text-sm">ยังไม่มีรายการที่สนใจ</p></div>`;
-        return;
       }
 
-      items.innerHTML = wishlist.map(id => {
-        const p = products.find(x => x.id === id);
-        if (!p) return '';
-        return `
-          <div class="flex items-center gap-3 p-3 bg-zinc-800/50 border border-zinc-800 rounded-xl">
-            <div class="w-14 h-14 bg-zinc-900 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">${p.emoji}</div>
-            <div class="flex-1 min-w-0">
-              <h4 class="text-sm font-semibold text-white truncate">${p.name}</h4>
-              <p class="text-xs text-amber-400 font-bold mt-0.5">฿${Number(p.price).toLocaleString()}</p>
-            </div>
-            <button onclick="window.toggleWishlist('${p.id}')" class="p-2 hover:bg-red-500/10 rounded-lg transition-all">
-              <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-            </button>
-          </div>
-        `;
-      }).join('');
-    }
-
-    const wishlistSidebar = document.getElementById('wishlistSidebar');
-    const wishlistPanel = document.getElementById('wishlistPanel');
-    document.getElementById('wishlistBtn').addEventListener('click', () => {
-      wishlistSidebar.classList.remove('hidden');
-      updateWishlistUI();
-      requestAnimationFrame(() => wishlistPanel.classList.remove('translate-x-full'));
-    });
-    function closeWishlist() {
-      wishlistPanel.classList.add('translate-x-full');
-      setTimeout(() => wishlistSidebar.classList.add('hidden'), 300);
-    }
-    document.getElementById('closeWishlistBtn').addEventListener('click', closeWishlist);
-    document.getElementById('wishlistOverlay').addEventListener('click', closeWishlist);
-
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      document.getElementById('toastMessage').textContent = msg;
-      t.classList.remove('hidden');
-      setTimeout(() => t.classList.add('hidden'), 2500);
-    }
-
-    document.getElementById('searchInput').addEventListener('input', (e) => { searchQuery = e.target.value; renderProducts(); });
-    document.getElementById('searchInputMobile').addEventListener('input', (e) => { searchQuery = e.target.value; renderProducts(); });
-    document.getElementById('sortSelect').addEventListener('change', (e) => { sortBy = e.target.value; renderProducts(); });
-
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      if (confirm('ต้องการออกจากระบบใช่หรือไม่?')) await signOut(auth);
-    });
-
-    // ==========================================
-    // ⚡ ADMIN PANEL LOGIC
-    // ==========================================
-    const adminBtn = document.getElementById('adminBtn');
-    const adminBadge = document.getElementById('adminBadge');
-    const adminModal = document.getElementById('adminModal');
-    const adminModalContent = document.getElementById('adminModalContent');
-    const productForm = document.getElementById('productForm');
-    const formTitleText = document.getElementById('formTitleText');
-    const submitBtnText = document.getElementById('submitBtnText');
-    const cancelEditBtn = document.getElementById('cancelEditBtn');
-    const adminProductsList = document.getElementById('adminProductsList');
-    const adminProductCount = document.getElementById('adminProductCount');
-
-    function openAdminModal() {
-      adminModal.classList.remove('hidden');
-      adminModal.classList.add('flex');
-      requestAnimationFrame(() => {
-        adminModal.classList.remove('opacity-0');
-        adminModalContent.classList.remove('scale-95');
-        adminModalContent.classList.add('scale-100');
-      });
-      renderAdminProductsList();
-    }
-
-    function closeAdminModal() {
-      adminModal.classList.add('opacity-0');
-      adminModalContent.classList.remove('scale-100');
-      adminModalContent.classList.add('scale-95');
-      setTimeout(() => {
-        adminModal.classList.add('hidden');
-        adminModal.classList.remove('flex');
-        resetForm();
-      }, 300);
-    }
-
-    function resetForm() {
-      productForm.reset();
-      document.getElementById('editProductId').value = '';
-      formTitleText.textContent = 'เพิ่มสินค้าใหม่';
-      submitBtnText.textContent = 'เพิ่มสินค้า';
-      cancelEditBtn.classList.add('hidden');
-    }
-
-    function renderAdminProductsList() {
-      adminProductCount.textContent = products.length;
-      adminProductsList.innerHTML = products.map(p => `
-        <div class="flex items-center gap-3 p-3 bg-zinc-950/50 border border-zinc-800 rounded-xl hover:border-zinc-700 transition-all">
-          <div class="w-12 h-12 bg-zinc-900 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">${p.emoji}</div>
-          <div class="flex-1 min-w-0">
-            <h4 class="text-sm font-semibold text-white truncate">${p.name}</h4>
-            <div class="flex items-center gap-2 text-xs text-zinc-500 mt-0.5">
-              <span class="text-amber-400 font-bold">฿${Number(p.price).toLocaleString()}</span>
-              <span>•</span>
-              <span>${categories.find(c=>c.id===p.category)?.name || ''}</span>
-              <span>•</span>
-              <span>สต็อก: ${p.stock}</span>
-            </div>
-          </div>
-          <div class="flex gap-1.5">
-            <button onclick="window.editProduct('${p.id}')" class="p-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-lg transition-all" title="แก้ไข">
-              <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-            </button>
-            <button onclick="window.deleteProduct('${p.id}')" class="p-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-lg transition-all" title="ลบ">
-              <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-            </button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    window.editProduct = (id) => {
-      const p = products.find(x => x.id === id);
-      if (!p) return;
-      document.getElementById('editProductId').value = p.id;
-      document.getElementById('formName').value = p.name;
-      document.getElementById('formCategory').value = p.category;
-      document.getElementById('formPrice').value = p.price;
-      document.getElementById('formEmoji').value = p.emoji;
-      document.getElementById('formStock').value = p.stock;
-      document.getElementById('formRating').value = p.rating;
-      document.getElementById('formDescription').value = p.description;
-      document.getElementById('formFeatures').value = (p.features || []).join(', ');
-      
-      formTitleText.textContent = 'แก้ไขสินค้า';
-      submitBtnText.textContent = 'บันทึกการแก้ไข';
-      cancelEditBtn.classList.remove('hidden');
-      
-      document.getElementById('formName').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    };
-
-    window.deleteProduct = async (id) => {
-      const p = products.find(x => x.id === id);
-      if (!p) return;
-      if (!confirm(`ต้องการลบ "${p.name}" ใช่หรือไม่?`)) return;
-      
-      try {
-        await deleteProductFromFirestore(id);
-        products = products.filter(x => x.id !== id);
-        wishlist = wishlist.filter(x => x !== id);
-        localStorage.setItem('wishlist', JSON.stringify(wishlist));
-        renderProducts();
-        renderAdminProductsList();
-        updateWishlistUI();
-        showToast('ลบสินค้าสำเร็จ');
-      } catch (e) {
-        console.error(e);
-        showToast('เกิดข้อผิดพลาดในการลบ');
-      }
-    };
-
-    cancelEditBtn.addEventListener('click', resetForm);
-
-    productForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!isAdmin) {
-        showToast('คุณไม่มีสิทธิ์จัดการสินค้า');
-        return;
+      function closeLogin() {
+        switchKnob.classList.remove('on');
+        switchTrackGlow.classList.add('opacity-0');
+        switchLed.classList.add('bg-red-900/50');
+        switchLed.classList.remove('bg-amber-400', 'shadow-[0_0_10px_rgba(251,191,36,0.8)]');
+        switchLabel.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span> แตะสวิตช์เพื่อเข้าสู่ระบบ`;
+        switchLabel.classList.add('animate-pulse', 'text-zinc-500');
+        switchLabel.classList.remove('text-amber-400');
+        loginOverlay.classList.add('opacity-0', '-translate-y-full');
+        loginOverlay.classList.remove('translate-y-0', 'opacity-100');
+        loginForm.reset(); 
+        signupForm.reset(); 
+        hideError();
+        setTimeout(() => loginOverlay.classList.add('pointer-events-none'), 500);
       }
 
-      const editId = document.getElementById('editProductId').value;
-      const featuresText = document.getElementById('formFeatures').value;
-      const features = featuresText.split(',').map(f => f.trim()).filter(f => f);
+      wallSwitch.addEventListener('click', toggleSwitch);
+      document.getElementById('closeLoginBtn').addEventListener('click', closeLogin);
 
-      const productData = {
-        name: document.getElementById('formName').value.trim(),
-        category: document.getElementById('formCategory').value,
-        price: Number(document.getElementById('formPrice').value),
-        emoji: document.getElementById('formEmoji').value.trim(),
-        stock: Number(document.getElementById('formStock').value),
-        rating: Number(document.getElementById('formRating').value),
-        description: document.getElementById('formDescription').value.trim(),
-        features: features
+      // Handle Login
+      window.handleLogin = async function() {
+        console.log("🔐 Login attempt started");
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const btn = document.getElementById('loginBtn');
+        
+        if (!email || !password) { 
+          showError('กรุณากรอกอีเมลและรหัสผ่าน'); 
+          return; 
+        }
+        
+        btn.disabled = true; 
+        btn.innerHTML = `<div class="spinner"></div> <span>กำลังเข้าสู่ระบบ...</span>`; 
+        hideError();
+
+        try {
+          console.log("📡 Calling Firebase signInWithEmailAndPassword...");
+          const userCredential = await signInWithEmailAndPassword(auth, email, password);
+          console.log("✅ Login successful:", userCredential.user.email);
+        } catch (error) {
+          console.error("❌ Login error:", error.code, error.message);
+          let msg = 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ';
+          
+          if (error.code === 'auth/user-not-found') msg = 'ไม่พบบัญชีนี้ในระบบ';
+          else if (error.code === 'auth/wrong-password') msg = 'รหัสผ่านไม่ถูกต้อง';
+          else if (error.code === 'auth/invalid-email') msg = 'รูปแบบอีเมลไม่ถูกต้อง';
+          else if (error.code === 'auth/invalid-credential') msg = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
+          else if (error.code === 'auth/too-many-requests') msg = 'พยายามเข้าสู่ระบบมากเกินไป กรุณารอสักครู่';
+          else if (error.code === 'auth/network-request-failed') msg = 'ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้';
+          else msg = `Error: ${error.code || error.message}`;
+          
+          showError(msg);
+          btn.disabled = false; 
+          btn.innerHTML = `<span>เข้าสู่ระบบ</span>`;
+        }
       };
 
-      const btn = document.getElementById('submitProductBtn');
-      btn.disabled = true;
-      const originalText = submitBtnText.textContent;
-      submitBtnText.textContent = 'กำลังบันทึก...';
-
-      try {
-        if (editId) {
-          await saveProductToFirestore({ id: editId, ...productData });
-          const idx = products.findIndex(p => p.id === editId);
-          if (idx > -1) products[idx] = { id: editId, ...productData };
-          showToast('แก้ไขสินค้าสำเร็จ ✅');
-        } else {
-          const newId = await saveProductToFirestore(productData);
-          products.push({ id: newId, ...productData });
-          showToast('เพิ่มสินค้าสำเร็จ ✅');
+      // Handle Signup
+      window.handleSignup = async function() {
+        console.log("📝 Signup attempt started");
+        const username = document.getElementById('signupUsername').value.trim();
+        const email = document.getElementById('signupEmail').value.trim();
+        const password = document.getElementById('signupPassword').value;
+        const btn = document.getElementById('signupBtn');
+        
+        if (!username || !email || !password) { 
+          showError('กรุณากรอกข้อมูลให้ครบ'); 
+          return; 
+        }
+        if (password.length < 6) { 
+          showError('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'); 
+          return; 
         }
         
-        renderProducts();
-        renderAdminProductsList();
-        resetForm();
-      } catch (err) {
-        console.error(err);
-        showToast('เกิดข้อผิดพลาด: ' + err.message);
-      } finally {
-        btn.disabled = false;
-        submitBtnText.textContent = editId ? 'บันทึกการแก้ไข' : 'เพิ่มสินค้า';
-      }
-    });
+        btn.disabled = true; 
+        btn.innerHTML = `<div class="spinner"></div> <span>กำลังสมัคร...</span>`; 
+        hideError();
 
-    document.getElementById('closeAdminBtn').addEventListener('click', closeAdminModal);
-    adminModal.addEventListener('click', (e) => { if (e.target === adminModal) closeAdminModal(); });
-    adminBtn.addEventListener('click', openAdminModal);
-
-    // ==========================================
-    // AUTH STATE
-    // ==========================================
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        currentUser = user;
-        isAdmin = user.email === ADMIN_EMAIL;
-        
-        loginPage.classList.add('hidden');
-        dashboardPage.classList.remove('hidden');
-        document.getElementById('displayUsername').textContent = user.displayName || 'User';
-        document.getElementById('displayEmail').textContent = user.email;
-        
-        // แสดงปุ่ม Admin เฉพาะเจ้าของอีเมล
-        if (isAdmin) {
-          adminBtn.classList.remove('hidden');
-          adminBadge.classList.remove('hidden');
-          console.log("✅ Admin access granted for:", user.email);
-        } else {
-          adminBtn.classList.add('hidden');
-          adminBadge.classList.add('hidden');
+        try {
+          console.log("📡 Calling Firebase createUserWithEmailAndPassword...");
+          const cred = await createUserWithEmailAndPassword(auth, email, password);
+          console.log("✅ Signup successful:", cred.user.email);
+          
+          await updateProfile(cred.user, { displayName: username });
+          console.log("✅ Profile updated");
+          
+          try { 
+            await setDoc(doc(db, "users", cred.user.uid), { 
+              username, 
+              email, 
+              createdAt: new Date().toISOString() 
+            });
+            console.log("✅ User data saved to Firestore");
+          } catch(e) {
+            console.warn("⚠️ Firestore save failed:", e);
+          }
+        } catch (error) {
+          console.error("❌ Signup error:", error.code, error.message);
+          let msg = 'เกิดข้อผิดพลาดในการสมัคร';
+          
+          if (error.code === 'auth/email-already-in-use') msg = 'อีเมลนี้ถูกใช้งานแล้ว';
+          else if (error.code === 'auth/invalid-email') msg = 'รูปแบบอีเมลไม่ถูกต้อง';
+          else if (error.code === 'auth/weak-password') msg = 'รหัสผ่านอ่อนเกินไป (อย่างน้อย 6 ตัวอักษร)';
+          else msg = `Error: ${error.code || error.message}`;
+          
+          showError(msg);
+          btn.disabled = false; 
+          btn.innerHTML = `<span>สมัครสมาชิก</span>`;
         }
+      };
 
-        // โหลดสินค้าจาก Firestore
-        products = await loadProductsFromFirestore();
-        renderCategories();
-        renderProducts();
-        updateWishlistUI();
-      } else {
-        currentUser = null;
-        isAdmin = false;
-        products = [];
-        dashboardPage.classList.add('hidden');
-        loginPage.classList.remove('hidden');
-      }
-    });
+      // Auth State Observer
+      onAuthStateChanged(auth, (user) => {
+        console.log("👤 Auth state changed:", user ? user.email : 'logged out');
+        
+        const loginPage = document.getElementById('loginPage');
+        const dashboardPage = document.getElementById('dashboardPage');
+        const adminBtn = document.getElementById('adminBtn');
+        const adminBadge = document.getElementById('adminBadge');
 
-    renderCategories();
-    updateWishlistUI();
+        if (user) {
+          loginPage.classList.add('hidden');
+          dashboardPage.classList.remove('hidden');
+          
+          document.getElementById('displayUsername').textContent = user.displayName || 'User';
+          document.getElementById('displayEmail').textContent = user.email;
+          
+          if (user.email === ADMIN_EMAIL) {
+            adminBtn.classList.remove('hidden');
+            adminBadge.classList.remove('hidden');
+            console.log("✅ Admin access granted");
+          } else {
+            adminBtn.classList.add('hidden');
+            adminBadge.classList.add('hidden');
+          }
+        } else {
+          loginPage.classList.remove('hidden');
+          dashboardPage.classList.add('hidden');
+        }
+      });
+
+      // Logout
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        if (confirm('ต้องการออกจากระบบใช่หรือไม่?')) {
+          try {
+            await signOut(auth);
+            console.log("✅ Logged out");
+          } catch (error) {
+            console.error("❌ Logout error:", error);
+          }
+        }
+      });
+
+      console.log("✅ All event listeners attached");
+
+    } catch (error) {
+      console.error("❌ Fatal error:", error);
+      alert("เกิดข้อผิดพลาด: " + error.message);
+    }
   </script>
 </body>
 </html>
