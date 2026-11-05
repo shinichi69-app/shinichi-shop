@@ -3,33 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Wall Switch Login System - Firebase Ready</title>
+  <title>Shinichi Shop - Marketplace</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Firebase SDK (v9+ Modular) -->
+  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { 
-      getAuth, 
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      signOut,
-      onAuthStateChanged,
-      updateProfile
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { 
-      getFirestore, 
-      doc, 
-      setDoc, 
-      getDoc 
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // ==========================================
-    // FIREBASE CONFIGURATION
-    // ==========================================
     const firebaseConfig = {
       apiKey: "AIzaSyCGG103Vc3C7xhgW-4XQRU4K0OzuotLx-I",
       authDomain: "login-15303.firebaseapp.com",
@@ -39,591 +24,790 @@
       appId: "1:403564723749:web:c9fb83e920ec2cbfb049cc"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // Export to window for use in other scripts
-    window.firebaseAuth = auth;
-    window.firebaseDb = db;
-    window.firebaseFunctions = {
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      signOut,
-      onAuthStateChanged,
-      updateProfile,
-      doc,
-      setDoc,
-      getDoc
-    };
-
-    console.log("✅ Firebase initialized successfully");
+    window.firebaseAuth = getAuth(app);
+    window.firebaseDb = getFirestore(app);
+    window.firebaseFunctions = { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, doc, setDoc, getDoc };
+    console.log("✅ Firebase initialized");
   </script>
 
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      user-select: none;
-      -webkit-user-select: none;
-      overscroll-behavior: none;
-    }
-    .code-font {
-      font-family: 'Fira Code', monospace;
-    }
-
-    /* Wall Switch 3D Effect */
-    .wall-switch-plate {
-      background: linear-gradient(145deg, #27272a, #18181b);
-      box-shadow: 8px 8px 16px #09090b, -8px -8px 16px #3f3f46;
-      transition: transform 0.1s ease;
-    }
-    .wall-switch-plate:active {
-      transform: scale(0.97);
-      box-shadow: 4px 4px 8px #09090b, -4px -4px 8px #3f3f46;
-    }
+    body { font-family: 'Inter', sans-serif; user-select: none; -webkit-user-select: none; overscroll-behavior: none; }
+    .code-font { font-family: 'Fira Code', monospace; }
     
-    .switch-knob {
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.2);
-    }
-    .switch-knob.on {
-      transform: translateX(100%);
-      background: linear-gradient(145deg, #fbbf24, #d97706);
-      box-shadow: 0 0 20px rgba(245, 158, 11, 0.6), inset 0 1px 1px rgba(255,255,255,0.4);
-    }
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #18181b; }
+    ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #52525b; }
 
-    /* Login Overlay Transitions */
-    #loginOverlay {
-      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
-    }
+    /* Wall Switch */
+    .wall-switch-plate { background: linear-gradient(145deg, #27272a, #18181b); box-shadow: 8px 8px 16px #09090b, -8px -8px 16px #3f3f46; transition: transform 0.1s ease; }
+    .wall-switch-plate:active { transform: scale(0.97); }
+    .switch-knob { transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.2); }
+    .switch-knob.on { transform: translateX(100%); background: linear-gradient(145deg, #fbbf24, #d97706); box-shadow: 0 0 20px rgba(245, 158, 11, 0.6); }
+    #loginOverlay { transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease; }
+    .tab-btn { transition: all 0.3s ease; }
+    .tab-btn.active { background: linear-gradient(135deg, #f59e0b, #d97706); color: #18181b; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+    .spinner { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #f59e0b; border-radius: 50%; width: 20px; height: 20px; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-msg { animation: shake 0.4s ease; }
+    @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);} }
 
-    /* Tab Switcher */
-    .tab-btn {
-      transition: all 0.3s ease;
-    }
-    .tab-btn.active {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      color: #18181b;
-      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-    }
+    /* Product Card Hover */
+    .product-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -15px rgba(245, 158, 11, 0.25); }
+    
+    /* Category Pill */
+    .cat-pill { transition: all 0.2s ease; }
+    .cat-pill.active { background: linear-gradient(135deg, #f59e0b, #d97706); color: #18181b; border-color: transparent; }
 
-    /* Loading Spinner */
-    .spinner {
-      border: 3px solid rgba(255, 255, 255, 0.1);
-      border-top: 3px solid #f59e0b;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* Error Message */
-    .error-msg {
-      animation: shake 0.4s ease;
-    }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
+    /* Modal Animation */
+    #productModal { transition: opacity 0.3s ease; }
+    #productModalContent { transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
   </style>
 </head>
-<body class="bg-zinc-950 text-slate-100 min-h-screen flex flex-col overflow-hidden selection:bg-amber-500 selection:text-black">
+<body class="bg-zinc-950 text-slate-100 min-h-screen overflow-x-hidden selection:bg-amber-500 selection:text-black">
 
   <!-- ========================================== -->
-  <!-- LOGIN OVERLAY                              -->
+  <!-- LOGIN PAGE (แสดงเมื่อ ยังไม่ Login)        -->
   <!-- ========================================== -->
-  <div id="loginOverlay" class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/90 backdrop-blur-xl transform -translate-y-full opacity-0 pointer-events-none">
+  <div id="loginPage" class="min-h-screen flex flex-col">
+    <div id="loginOverlay" class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/90 backdrop-blur-xl transform -translate-y-full opacity-0 pointer-events-none">
+      <div class="w-full max-w-md p-8">
+        <div class="text-center mb-8">
+          <div class="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.15)]">
+            <svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+          </div>
+          <h2 class="text-3xl font-bold text-white mb-2">ยินดีต้อนรับ</h2>
+          <p class="text-zinc-400 text-sm">กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ</p>
+        </div>
+
+        <div class="flex gap-2 mb-6 bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+          <button id="loginTabBtn" class="tab-btn active flex-1 py-2.5 rounded-lg text-sm font-semibold">เข้าสู่ระบบ</button>
+          <button id="signupTabBtn" class="tab-btn flex-1 py-2.5 rounded-lg text-sm font-semibold text-zinc-400">สมัครสมาชิก</button>
+        </div>
+
+        <div id="errorMsg" class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm error-msg"></div>
+
+        <form id="loginForm" class="space-y-5" onsubmit="event.preventDefault(); handleLogin();">
+          <div>
+            <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">อีเมล</label>
+            <input type="email" id="loginEmail" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="your@email.com" required>
+          </div>
+          <div>
+            <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">รหัสผ่าน</label>
+            <input type="password" id="loginPassword" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="••••••••" required>
+          </div>
+          <button type="submit" id="loginBtn" class="w-full bg-amber-500 hover:bg-amber-400 active:scale-95 text-zinc-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
+            <span>เข้าสู่ระบบ</span>
+          </button>
+        </form>
+
+        <form id="signupForm" class="space-y-5 hidden" onsubmit="event.preventDefault(); handleSignup();">
+          <div>
+            <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">ชื่อผู้ใช้</label>
+            <input type="text" id="signupUsername" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="ชื่อของคุณ" required>
+          </div>
+          <div>
+            <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">อีเมล</label>
+            <input type="email" id="signupEmail" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="your@email.com" required>
+          </div>
+          <div>
+            <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">รหัสผ่าน</label>
+            <input type="password" id="signupPassword" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="อย่างน้อย 6 ตัวอักษร" required minlength="6">
+          </div>
+          <button type="submit" id="signupBtn" class="w-full bg-amber-500 hover:bg-amber-400 active:scale-95 text-zinc-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
+            <span>สมัครสมาชิก</span>
+          </button>
+        </form>
+
+        <button id="closeLoginBtn" class="w-full mt-8 text-zinc-500 hover:text-white text-sm font-medium transition-colors flex items-center justify-center gap-2 py-3 border border-zinc-800 rounded-xl hover:bg-zinc-900">
+          ยกเลิก / ปิดสวิตช์
+        </button>
+      </div>
+    </div>
+
+    <main class="flex-1 flex flex-col items-center justify-center p-6 relative">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-900/50 via-zinc-950 to-zinc-950 pointer-events-none"></div>
+      <div class="relative z-10 flex flex-col items-center gap-8">
+        <div class="text-center space-y-1">
+          <div class="text-zinc-500 font-mono text-xs tracking-[0.2em] uppercase">System Access Control</div>
+          <div class="text-zinc-300 font-semibold text-lg">Security Gate</div>
+        </div>
+        <div id="wallSwitch" class="wall-switch-plate relative w-40 h-24 rounded-2xl border border-zinc-700/50 cursor-pointer">
+          <div id="switchTrackGlow" class="absolute inset-0 rounded-2xl bg-amber-500/10 opacity-0 transition-opacity duration-300"></div>
+          <div id="switchKnob" class="switch-knob absolute top-2 left-2 w-20 h-20 rounded-xl bg-gradient-to-b from-zinc-400 to-zinc-600 flex items-center justify-center">
+            <div class="w-4 h-4 rounded-full bg-zinc-800 shadow-inner"></div>
+          </div>
+          <div id="switchLed" class="absolute bottom-4 right-4 w-2.5 h-2.5 rounded-full bg-red-900/50 transition-all duration-300"></div>
+        </div>
+        <div id="switchLabel" class="text-xs text-zinc-500 font-mono animate-pulse flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span>
+          แตะสวิตช์เพื่อเข้าสู่ระบบ
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- DASHBOARD PAGE (แสดงเมื่อ Login แล้ว)      -->
+  <!-- ========================================== -->
+  <div id="dashboardPage" class="min-h-screen hidden">
     
-    <div class="w-full max-w-md p-8">
-      <div class="text-center mb-8">
-        <div class="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.15)]">
-          <svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-          </svg>
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800/60">
+      <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between gap-4">
+        <!-- Logo -->
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
+            <svg class="w-5 h-5 text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <div>
+            <h1 class="font-bold text-white text-sm md:text-base leading-tight">Shinichi Shop</h1>
+            <p class="text-[10px] text-zinc-500 font-mono leading-tight">MARKETPLACE</p>
+          </div>
         </div>
-        <h2 class="text-3xl font-bold text-white mb-2">ยินดีต้อนรับ</h2>
-        <p class="text-zinc-400 text-sm">กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ</p>
-        <p id="welcomeUser" class="text-amber-400 text-xs font-mono mt-2 hidden"></p>
+
+        <!-- Search Bar (ซ่อนในมือถือเล็ก) -->
+        <div class="hidden md:flex flex-1 max-w-md mx-4">
+          <div class="relative w-full">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input id="searchInput" type="text" placeholder="ค้นหาสินค้าหรือบริการ..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+          </div>
+        </div>
+
+        <!-- Right Actions -->
+        <div class="flex items-center gap-2">
+          <!-- Wishlist Button -->
+          <button id="wishlistBtn" class="relative p-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-xl transition-all">
+            <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+            <span id="wishlistCount" class="absolute -top-1 -right-1 bg-amber-500 text-zinc-950 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
+          </button>
+
+          <!-- User Menu -->
+          <div class="flex items-center gap-2 pl-2 border-l border-zinc-800">
+            <div class="text-right hidden sm:block">
+              <p id="displayUsername" class="text-xs font-semibold text-white leading-tight">User</p>
+              <p id="displayEmail" class="text-[10px] text-zinc-500 leading-tight truncate max-w-[120px]">email@...</p>
+            </div>
+            <button id="logoutBtn" class="p-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl transition-all group" title="ออกจากระบบ">
+              <svg class="w-4 h-4 text-red-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            </button>
+          </div>
+        </div>
       </div>
 
-      <!-- Tab Switcher -->
-      <div class="flex gap-2 mb-6 bg-zinc-900 p-1 rounded-xl border border-zinc-800">
-        <button id="loginTabBtn" class="tab-btn active flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all">เข้าสู่ระบบ</button>
-        <button id="signupTabBtn" class="tab-btn flex-1 py-2.5 rounded-lg text-sm font-semibold text-zinc-400 transition-all">สมัครสมาชิก</button>
+      <!-- Mobile Search -->
+      <div class="md:hidden px-4 pb-3">
+        <div class="relative">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input id="searchInputMobile" type="text" placeholder="ค้นหาสินค้า..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500">
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="max-w-7xl mx-auto px-4 md:px-6 pt-6 pb-4">
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-500/20 via-zinc-900 to-zinc-950 border border-amber-500/20 p-6 md:p-10">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        <div class="relative z-10 max-w-xl">
+          <div class="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full text-amber-400 text-xs font-mono mb-4">
+            <span class="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></span>
+            NEW COLLECTION 2026
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 leading-tight">
+            สินค้าและบริการ<br>
+            <span class="text-amber-400">คุณภาพระดับพรีเมียม</span>
+          </h2>
+          <p class="text-zinc-400 text-sm md:text-base mb-5">เลือกชมสินค้าหลากหลายหมวดหมู่ พร้อมบริการหลังการขายที่ดูแลคุณตลอดการใช้งาน</p>
+          <div class="flex flex-wrap gap-3">
+            <button onclick="scrollToProducts()" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-semibold text-sm rounded-xl transition-all shadow-lg shadow-amber-500/30">
+              เลือกชมสินค้า
+            </button>
+            <button onclick="scrollToProducts()" class="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-sm rounded-xl transition-all border border-zinc-700">
+              ติดต่อเรา
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="max-w-7xl mx-auto px-4 md:px-6 pb-4">
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide" id="categoryContainer">
+        <!-- Categories injected by JS -->
+      </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section id="productsSection" class="max-w-7xl mx-auto px-4 md:px-6 pb-12">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h3 class="text-xl font-bold text-white">สินค้าทั้งหมด</h3>
+          <p id="productCount" class="text-xs text-zinc-500 font-mono mt-0.5">กำลังโหลด...</p>
+        </div>
+        <select id="sortSelect" class="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-300 focus:outline-none focus:border-amber-500">
+          <option value="default">เรียงตาม: แนะนำ</option>
+          <option value="price-asc">ราคา: ต่ำ → สูง</option>
+          <option value="price-desc">ราคา: สูง → ต่ำ</option>
+          <option value="name">ชื่อ: A-Z</option>
+        </select>
       </div>
 
-      <!-- Error Message Display -->
-      <div id="errorMsg" class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm error-msg"></div>
+      <div id="productsGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+        <!-- Products injected by JS -->
+      </div>
 
-      <!-- Login Form -->
-      <form id="loginForm" class="space-y-5" onsubmit="event.preventDefault(); handleLogin();">
-        <div>
-          <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">อีเมล</label>
-          <input type="email" id="loginEmail" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" placeholder="your@email.com" autocomplete="email" required>
+      <!-- Empty State -->
+      <div id="emptyState" class="hidden text-center py-16">
+        <svg class="w-16 h-16 text-zinc-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <p class="text-zinc-500 text-sm">ไม่พบสินค้าที่ค้นหา</p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-zinc-800/60 bg-zinc-950/50">
+      <div class="max-w-7xl mx-auto px-4 md:px-6 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
+                <svg class="w-4 h-4 text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              </div>
+              <span class="font-bold text-white">Shinichi Shop</span>
+            </div>
+            <p class="text-xs text-zinc-500 leading-relaxed">แพลตฟอร์มขายสินค้าและบริการคุณภาพ พร้อมดูแลคุณตลอดการใช้งาน</p>
+          </div>
+          <div>
+            <h4 class="text-xs font-semibold text-white mb-3 uppercase tracking-wider">ช่องทางติดต่อ</h4>
+            <ul class="space-y-2 text-xs text-zinc-400">
+              <li class="flex items-center gap-2">📱 LINE: @shinichishop</li>
+              <li class="flex items-center gap-2">📞 089-123-4567</li>
+              <li class="flex items-center gap-2">✉️ contact@shinichi.shop</li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-xs font-semibold text-white mb-3 uppercase tracking-wider">เวลาทำการ</h4>
+            <ul class="space-y-2 text-xs text-zinc-400">
+              <li>จันทร์ - ศุกร์: 09:00 - 18:00</li>
+              <li>เสาร์: 10:00 - 16:00</li>
+              <li>อาทิตย์: ปิดทำการ</li>
+            </ul>
+          </div>
         </div>
-        <div>
-          <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">รหัสผ่าน</label>
-          <input type="password" id="loginPassword" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" placeholder="••••••••" autocomplete="current-password" required>
+        <div class="pt-6 border-t border-zinc-800/60 text-center text-xs text-zinc-600">
+          © 2026 Shinichi Shop. All rights reserved.
         </div>
-        
-        <button type="submit" id="loginBtn" class="w-full bg-amber-500 hover:bg-amber-400 active:scale-95 text-zinc-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 mt-2 flex items-center justify-center gap-2">
-          <span>เข้าสู่ระบบ</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- PRODUCT DETAIL MODAL                       -->
+  <!-- ========================================== -->
+  <div id="productModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4 opacity-0">
+    <div id="productModalContent" class="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform scale-95">
+      <div class="relative">
+        <div id="modalImage" class="w-full h-64 md:h-80 bg-gradient-to-br from-zinc-800 to-zinc-950 flex items-center justify-center text-6xl">
+          📦
+        </div>
+        <button id="closeModalBtn" class="absolute top-4 right-4 w-10 h-10 bg-black/60 hover:bg-black/80 backdrop-blur rounded-full flex items-center justify-center text-white transition-all">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
-      </form>
+        <div id="modalCategory" class="absolute top-4 left-4 px-3 py-1 bg-amber-500/90 backdrop-blur text-zinc-950 text-xs font-bold rounded-full"></div>
+      </div>
 
-      <!-- Signup Form (Hidden by default) -->
-      <form id="signupForm" class="space-y-5 hidden" onsubmit="event.preventDefault(); handleSignup();">
-        <div>
-          <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">ชื่อผู้ใช้</label>
-          <input type="text" id="signupUsername" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" placeholder="ชื่อของคุณ" required>
+      <div class="p-6 md:p-8">
+        <div class="flex items-start justify-between gap-4 mb-4">
+          <h2 id="modalTitle" class="text-2xl font-bold text-white leading-tight"></h2>
+          <button id="modalWishlistBtn" class="flex-shrink-0 p-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-xl transition-all">
+            <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+          </button>
         </div>
-        <div>
-          <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">อีเมล</label>
-          <input type="email" id="signupEmail" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" placeholder="your@email.com" autocomplete="email" required>
-        </div>
-        <div>
-          <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">รหัสผ่าน</label>
-          <input type="password" id="signupPassword" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" placeholder="อย่างน้อย 6 ตัวอักษร" autocomplete="new-password" required minlength="6">
-        </div>
-        
-        <button type="submit" id="signupBtn" class="w-full bg-amber-500 hover:bg-amber-400 active:scale-95 text-zinc-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 mt-2 flex items-center justify-center gap-2">
-          <span>สมัครสมาชิก</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-        </button>
-      </form>
 
-      <button id="closeLoginBtn" class="w-full mt-8 text-zinc-500 hover:text-white text-sm font-medium transition-colors flex items-center justify-center gap-2 py-3 border border-zinc-800 rounded-xl hover:bg-zinc-900 active:scale-95">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-        ยกเลิก / ปิดสวิตช์
-      </button>
+        <div class="flex items-baseline gap-2 mb-5">
+          <span id="modalPrice" class="text-3xl font-bold text-amber-400"></span>
+          <span class="text-sm text-zinc-500">บาท</span>
+        </div>
+
+        <div class="flex items-center gap-3 mb-5 text-xs">
+          <span class="flex items-center gap-1.5 text-zinc-400">
+            <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.293z"/></svg>
+            <span id="modalRating" class="text-white font-semibold"></span>
+          </span>
+          <span class="text-zinc-600">•</span>
+          <span id="modalStock" class="text-zinc-400"></span>
+        </div>
+
+        <p id="modalDescription" class="text-sm text-zinc-400 leading-relaxed mb-6"></p>
+
+        <!-- Features -->
+        <div id="modalFeatures" class="grid grid-cols-2 gap-2 mb-6"></div>
+
+        <!-- Contact Buttons (ไม่มีระบบชำระเงิน) -->
+        <div class="space-y-2.5">
+          <p class="text-xs font-mono text-zinc-500 uppercase tracking-wider mb-2">สนใจสินค้านี้? ติดต่อเราได้เลย</p>
+          
+          <a href="https://line.me/ti/p/@shinichishop" target="_blank" class="w-full flex items-center justify-center gap-2 bg-[#06C755] hover:bg-[#05b34d] text-white font-semibold py-3.5 rounded-xl transition-all active:scale-95">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+            <span>ทัก LINE เพื่อสั่งซื้อ</span>
+          </a>
+
+          <a href="tel:0891234567" class="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold py-3.5 rounded-xl transition-all active:scale-95 border border-zinc-700">
+            <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+            <span>โทร: 089-123-4567</span>
+          </a>
+
+          <button id="addToWishlistBtn2" class="w-full flex items-center justify-center gap-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-semibold py-3.5 rounded-xl transition-all active:scale-95 border border-amber-500/30">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+            <span>บันทึกรายการที่สนใจ</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- ========================================== -->
-  <!-- MAIN CONTENT: WALL SWITCH                  -->
+  <!-- WISHLIST SIDEBAR                           -->
   <!-- ========================================== -->
-  <main class="flex-1 flex flex-col items-center justify-center p-6 relative">
-    
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-900/50 via-zinc-950 to-zinc-950 pointer-events-none"></div>
-
-    <div class="relative z-10 flex flex-col items-center gap-8">
-      
-      <div class="text-center space-y-1">
-        <div class="text-zinc-500 font-mono text-xs tracking-[0.2em] uppercase">System Access Control</div>
-        <div class="text-zinc-300 font-semibold text-lg">Security Gate</div>
-      </div>
-      
-      <!-- The Wall Switch -->
-      <div id="wallSwitch" class="wall-switch-plate relative w-40 h-24 rounded-2xl border border-zinc-700/50 cursor-pointer">
-        <div id="switchTrackGlow" class="absolute inset-0 rounded-2xl bg-amber-500/10 opacity-0 transition-opacity duration-300"></div>
-        
-        <div id="switchKnob" class="switch-knob absolute top-2 left-2 w-20 h-20 rounded-xl bg-gradient-to-b from-zinc-400 to-zinc-600 flex items-center justify-center">
-          <div class="w-4 h-4 rounded-full bg-zinc-800 shadow-inner"></div>
+  <div id="wishlistSidebar" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="wishlistOverlay"></div>
+    <div class="absolute right-0 top-0 h-full w-full max-w-md bg-zinc-900 border-l border-zinc-800 transform translate-x-full transition-transform duration-300 flex flex-col" id="wishlistPanel">
+      <div class="flex items-center justify-between p-5 border-b border-zinc-800">
+        <div>
+          <h3 class="font-bold text-white text-lg">รายการที่สนใจ</h3>
+          <p id="wishlistTotal" class="text-xs text-zinc-500 font-mono mt-0.5">0 รายการ</p>
         </div>
-        
-        <div id="switchLed" class="absolute bottom-4 right-4 w-2.5 h-2.5 rounded-full bg-red-900/50 transition-all duration-300"></div>
-      </div>
-      
-      <div id="switchLabel" class="text-xs text-zinc-500 font-mono animate-pulse flex items-center gap-2">
-        <span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span>
-        แตะสวิตช์เพื่อเข้าสู่ระบบ
-      </div>
-
-      <!-- User Info (Shown when logged in) -->
-      <div id="userInfo" class="hidden mt-4 p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl text-center">
-        <p class="text-zinc-400 text-xs mb-1">เข้าสู่ระบบในฐานะ</p>
-        <p id="userEmail" class="text-amber-400 font-mono text-sm"></p>
-        <button id="logoutBtn" class="mt-3 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-semibold rounded-lg border border-red-500/30 transition-all">
-          ล็อกเอาท์
+        <button id="closeWishlistBtn" class="p-2 hover:bg-zinc-800 rounded-lg transition-all">
+          <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
 
+      <div id="wishlistItems" class="flex-1 overflow-y-auto p-5 space-y-3">
+        <!-- Wishlist items injected by JS -->
+      </div>
+
+      <div class="p-5 border-t border-zinc-800 bg-zinc-950/50">
+        <p class="text-xs text-zinc-500 mb-3 text-center">สนใจสินค้าชิ้นไหน? ติดต่อเราเพื่อสั่งซื้อได้เลย</p>
+        <a href="https://line.me/ti/p/@shinichishop" target="_blank" class="w-full flex items-center justify-center gap-2 bg-[#06C755] hover:bg-[#05b34d] text-white font-semibold py-3 rounded-xl transition-all">
+          <span>ส่งรายการผ่าน LINE</span>
+        </a>
+      </div>
     </div>
-  </main>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] hidden">
+    <div class="bg-zinc-900 border border-amber-500/30 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-2">
+      <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+      <span id="toastMessage" class="text-sm font-medium"></span>
+    </div>
+  </div>
 
   <!-- JavaScript Logic -->
   <script type="module">
-    // Wait for Firebase to initialize
-    const waitForFirebase = () => {
-      return new Promise((resolve) => {
-        const check = () => {
-          if (window.firebaseAuth && window.firebaseFunctions) {
-            resolve();
-          } else {
-            setTimeout(check, 100);
-          }
-        };
-        check();
+    const waitForFirebase = () => new Promise((resolve) => {
+      const check = () => {
+        if (window.firebaseAuth && window.firebaseFunctions) resolve();
+        else setTimeout(check, 100);
+      };
+      check();
+    });
+
+    await waitForFirebase();
+
+    const auth = window.firebaseAuth;
+    const db = window.firebaseDb;
+    const { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, doc, setDoc, getDoc } = window.firebaseFunctions;
+
+    // ==========================================
+    // SAMPLE PRODUCTS DATA
+    // ==========================================
+    const products = [
+      { id: 1, name: "หูฟังไร้สาย Pro", category: "electronics", price: 2490, rating: 4.8, stock: 15, emoji: "🎧", description: "หูฟังบลูทูธคุณภาพเสียงระดับ Hi-Fi แบตเตอรี่ใช้งานได้นาน 30 ชั่วโมง ตัดเสียงรบกวนอัจฉริยะ", features: ["Bluetooth 5.3", "แบต 30 ชม.", "ตัดเสียงรบกวน", "กันน้ำ IPX5"] },
+      { id: 2, name: "สมาร์ทวอทช์ X1", category: "electronics", price: 3990, rating: 4.9, stock: 8, emoji: "⌚", description: "สมาร์ทวอทช์จอ AMOLED ติดตามสุขภาพครบครัน วัดอัตราการเต้นหัวใจ SpO2 และ GPS ในตัว", features: ["จอ AMOLED", "GPS ในตัว", "วัด SpO2", "กันน้ำ 5ATM"] },
+      { id: 3, name: "คีย์บอร์ด Mechanical", category: "electronics", price: 1890, rating: 4.7, stock: 22, emoji: "⌨️", description: "คีย์บอร์ด Mechanical สวิตช์ Blue เสียงคลิกชัดเจน RGB 16.8 ล้านสี เหมาะกับเกมเมอร์และโปรแกรมเมอร์", features: ["สวิตช์ Blue", "RGB 16.8M สี", "Hot-swappable", "USB-C"] },
+      { id: 4, name: "เมาส์ Gaming Pro", category: "electronics", price: 1290, rating: 4.6, stock: 30, emoji: "🖱️", description: "เมาส์เกมเมอร์ DPI สูงสุด 25,600 น้ำหนักเบาเพียง 58 กรัม สวิตช์ Optical ทนทาน 100 ล้านคลิก", features: ["DPI 25,600", "น้ำหนัก 58g", "Optical Switch", "RGB"] },
+      { id: 5, name: "ลำโพง Bluetooth", category: "electronics", price: 2190, rating: 4.5, stock: 12, emoji: "🔊", description: "ลำโพงพกพาเสียงเบสแน่น กันน้ำ IPX7 ใช้งานกลางแจ้งได้สบาย แบตเตอรี่ 20 ชั่วโมง", features: ["กันน้ำ IPX7", "แบต 20 ชม.", "เสียง 360°", "TWS Pairing"] },
+      { id: 6, name: "กล้อง Mirrorless", category: "electronics", price: 24900, rating: 4.9, stock: 5, emoji: "📷", description: "กล้องมิเรอร์เลสเซนเซอร์ APS-C 26MP วิดีโอ 4K 60fps เหมาะกับทั้งช่างภาพและวิดีโอกราฟเฟอร์", features: ["26MP APS-C", "วิดีโอ 4K60", "IBIS 5 แกน", "WiFi/Bluetooth"] },
+      { id: 7, name: "บริการออกแบบโลโก้", category: "services", price: 3500, rating: 5.0, stock: 99, emoji: "🎨", description: "บริการออกแบบโลโก้มืออาชีพ รวมแก้ไข 3 ครั้ง ไฟล์ครบทุกฟอร์แมต (AI, PNG, SVG, PDF)", features: ["แก้ไข 3 ครั้ง", "ไฟล์ครบรูปแบบ", "ส่งงาน 5 วัน", "ลิขสิทธิ์เต็ม"] },
+      { id: 8, name: "บริการทำเว็บไซต์", category: "services", price: 15000, rating: 4.9, stock: 99, emoji: "💻", description: "รับทำเว็บไซต์ Responsive Design รองรับทุกอุปกรณ์ รวมโฮสติ้ง 1 ปี และระบบหลังบ้าน", features: ["Responsive", "โฮสติ้ง 1 ปี", "ระบบหลังบ้าน", "SEO พื้นฐาน"] },
+      { id: 9, name: "บริการถ่ายภาพสินค้า", category: "services", price: 5000, rating: 4.8, stock: 99, emoji: "📸", description: "บริการถ่ายภาพสินค้ามืออาชีพ สตูพร้อมอุปกรณ์ครบ ส่งไฟล์ความละเอียดสูง 20 รูป", features: ["สตูมืออาชีพ", "20 รูป HD", "รีทัชรูป", "ส่งงาน 7 วัน"] },
+      { id: 10, name: "บริการปรึกษาธุรกิจ", category: "services", price: 2500, rating: 4.7, stock: 99, emoji: "💼", description: "บริการให้คำปรึกษาธุรกิจแบบ 1-on-1 กับผู้เชี่ยวชาญ ประสบการณ์กว่า 10 ชั่วโมง", features: ["1-on-1", "10 ชั่วโมง", "รายงานสรุป", "ติดตามผล 1 เดือน"] },
+      { id: 11, name: "กระเป๋าสะพาย Premium", category: "fashion", price: 1690, rating: 4.6, stock: 18, emoji: "👜", description: "กระเป๋าสะพายหนังแท้คุณภาพพรีเมียม ดีไซน์มินิมอล ใส่โน้ตบุ๊ก 15 นิ้วได้ ช่องซิปหลายช่อง", features: ["หนังแท้", "ใส่โน้ตบุ๊ก 15\"", "หลายช่องซิป", "รับประกัน 1 ปี"] },
+      { id: 12, name: "รองเท้า Sneakers", category: "fashion", price: 2890, rating: 4.8, stock: 25, emoji: "👟", description: "รองเท้าผ้าใบสไตล์มินิมอล วัสดุน้ำหนักเบา พื้นนุ่มใส่สบาย เหมาะกับใส่ทุกวัน", features: ["น้ำหนักเบา", "พื้นนุ่ม", "ระบายอากาศ", "หลายไซส์"] },
+    ];
+
+    const categories = [
+      { id: "all", name: "ทั้งหมด", icon: "🏪" },
+      { id: "electronics", name: "อิเล็กทรอนิกส์", icon: "📱" },
+      { id: "services", name: "บริการ", icon: "🛠️" },
+      { id: "fashion", name: "แฟชั่น", icon: "👕" },
+    ];
+
+    // ==========================================
+    // STATE
+    // ==========================================
+    let currentCategory = "all";
+    let searchQuery = "";
+    let sortBy = "default";
+    let wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+    let currentUser = null;
+
+    // ==========================================
+    // LOGIN PAGE LOGIC
+    // ==========================================
+    const loginOverlay = document.getElementById('loginOverlay');
+    const wallSwitch = document.getElementById('wallSwitch');
+    const switchKnob = document.getElementById('switchKnob');
+    const switchTrackGlow = document.getElementById('switchTrackGlow');
+    const switchLed = document.getElementById('switchLed');
+    const switchLabel = document.getElementById('switchLabel');
+    const loginTabBtn = document.getElementById('loginTabBtn');
+    const signupTabBtn = document.getElementById('signupTabBtn');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const errorMsg = document.getElementById('errorMsg');
+
+    function showError(msg) { errorMsg.textContent = msg; errorMsg.classList.remove('hidden'); setTimeout(() => errorMsg.classList.add('hidden'), 5000); }
+    function hideError() { errorMsg.classList.add('hidden'); }
+
+    loginTabBtn.addEventListener('click', () => {
+      loginTabBtn.classList.add('active'); signupTabBtn.classList.remove('active');
+      loginForm.classList.remove('hidden'); signupForm.classList.add('hidden'); hideError();
+    });
+    signupTabBtn.addEventListener('click', () => {
+      signupTabBtn.classList.add('active'); loginTabBtn.classList.remove('active');
+      signupForm.classList.remove('hidden'); loginForm.classList.add('hidden'); hideError();
+    });
+
+    function toggleSwitch() {
+      const isOn = switchKnob.classList.toggle('on');
+      switchTrackGlow.classList.toggle('opacity-0', !isOn);
+      switchLed.classList.toggle('bg-red-900/50', !isOn);
+      switchLed.classList.toggle('bg-amber-400', isOn);
+      switchLed.classList.toggle('shadow-[0_0_10px_rgba(251,191,36,0.8)]', isOn);
+      switchLabel.innerHTML = isOn 
+        ? `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]"></span> ระบบพร้อมใช้งาน`
+        : `<span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span> แตะสวิตช์เพื่อเข้าสู่ระบบ`;
+      switchLabel.classList.toggle('animate-pulse', !isOn);
+      switchLabel.classList.toggle('text-zinc-500', !isOn);
+      switchLabel.classList.toggle('text-amber-400', isOn);
+
+      if (isOn) {
+        loginOverlay.classList.remove('pointer-events-none', 'opacity-0', '-translate-y-full');
+        loginOverlay.classList.add('translate-y-0', 'opacity-100');
+        setTimeout(() => document.getElementById('loginEmail').focus(), 600);
+      } else {
+        closeLogin();
+      }
+    }
+
+    function closeLogin() {
+      switchKnob.classList.remove('on');
+      switchTrackGlow.classList.add('opacity-0');
+      switchLed.classList.add('bg-red-900/50');
+      switchLed.classList.remove('bg-amber-400', 'shadow-[0_0_10px_rgba(251,191,36,0.8)]');
+      switchLabel.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span> แตะสวิตช์เพื่อเข้าสู่ระบบ`;
+      switchLabel.classList.add('animate-pulse', 'text-zinc-500');
+      switchLabel.classList.remove('text-amber-400');
+      loginOverlay.classList.add('opacity-0', '-translate-y-full');
+      loginOverlay.classList.remove('translate-y-0', 'opacity-100');
+      loginForm.reset(); signupForm.reset(); hideError();
+      setTimeout(() => loginOverlay.classList.add('pointer-events-none'), 500);
+    }
+
+    wallSwitch.addEventListener('click', toggleSwitch);
+    document.getElementById('closeLoginBtn').addEventListener('click', closeLogin);
+
+    window.handleLogin = async function() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('loginBtn');
+      if (!email || !password) { showError('กรุณากรอกอีเมลและรหัสผ่าน'); return; }
+      btn.disabled = true; btn.innerHTML = `<div class="spinner"></div> <span>กำลังเข้าสู่ระบบ...</span>`; hideError();
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (e) {
+        let msg = e.code === 'auth/user-not-found' ? 'ไม่พบบัญชีนี้' : e.code === 'auth/wrong-password' ? 'รหัสผ่านไม่ถูกต้อง' : e.code === 'auth/invalid-credential' ? 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' : `Error: ${e.code}`;
+        showError(msg);
+        btn.disabled = false; btn.innerHTML = `<span>เข้าสู่ระบบ</span>`;
+      }
+    };
+
+    window.handleSignup = async function() {
+      const username = document.getElementById('signupUsername').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value;
+      const btn = document.getElementById('signupBtn');
+      if (!username || !email || !password) { showError('กรุณากรอกข้อมูลให้ครบ'); return; }
+      if (password.length < 6) { showError('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'); return; }
+      btn.disabled = true; btn.innerHTML = `<div class="spinner"></div> <span>กำลังสมัคร...</span>`; hideError();
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(cred.user, { displayName: username });
+        try { await setDoc(doc(db, "users", cred.user.uid), { username, email, createdAt: new Date().toISOString() }); } catch(e){}
+      } catch (e) {
+        let msg = e.code === 'auth/email-already-in-use' ? 'อีเมลนี้ถูกใช้แล้ว' : e.code === 'auth/weak-password' ? 'รหัสผ่านอ่อนเกินไป' : `Error: ${e.code}`;
+        showError(msg);
+        btn.disabled = false; btn.innerHTML = `<span>สมัครสมาชิก</span>`;
+      }
+    };
+
+    // ==========================================
+    // DASHBOARD LOGIC
+    // ==========================================
+    const loginPage = document.getElementById('loginPage');
+    const dashboardPage = document.getElementById('dashboardPage');
+
+    function renderCategories() {
+      const container = document.getElementById('categoryContainer');
+      container.innerHTML = categories.map(c => `
+        <button onclick="window.setCategory('${c.id}')" class="cat-pill flex-shrink-0 flex items-center gap-2 px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm font-medium ${currentCategory === c.id ? 'active' : 'text-zinc-400 hover:text-white hover:border-zinc-700'}">
+          <span>${c.icon}</span>
+          <span>${c.name}</span>
+        </button>
+      `).join('');
+    }
+
+    function getFilteredProducts() {
+      let list = products;
+      if (currentCategory !== 'all') list = list.filter(p => p.category === currentCategory);
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        list = list.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
+      }
+      if (sortBy === 'price-asc') list = [...list].sort((a,b) => a.price - b.price);
+      else if (sortBy === 'price-desc') list = [...list].sort((a,b) => b.price - a.price);
+      else if (sortBy === 'name') list = [...list].sort((a,b) => a.name.localeCompare(b.name, 'th'));
+      return list;
+    }
+
+    function renderProducts() {
+      const list = getFilteredProducts();
+      const grid = document.getElementById('productsGrid');
+      const empty = document.getElementById('emptyState');
+      const count = document.getElementById('productCount');
+      
+      count.textContent = `${list.length} รายการ`;
+      
+      if (list.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+      
+      grid.innerHTML = list.map(p => {
+        const inWishlist = wishlist.includes(p.id);
+        return `
+          <div class="product-card bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden cursor-pointer group" onclick="window.openProduct(${p.id})">
+            <div class="relative aspect-square bg-gradient-to-br from-zinc-800 to-zinc-950 flex items-center justify-center text-6xl">
+              ${p.emoji}
+              <button onclick="event.stopPropagation(); window.toggleWishlist(${p.id})" class="absolute top-2 right-2 w-8 h-8 bg-black/60 backdrop-blur hover:bg-black/80 rounded-full flex items-center justify-center transition-all">
+                <svg class="w-4 h-4 ${inWishlist ? 'text-red-500 fill-current' : 'text-white'}" fill="${inWishlist ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+              </button>
+            </div>
+            <div class="p-3 md:p-4">
+              <div class="text-[10px] text-amber-500/80 font-mono uppercase mb-1">${categories.find(c=>c.id===p.category)?.name || ''}</div>
+              <h4 class="text-sm font-semibold text-white mb-2 line-clamp-2 leading-tight">${p.name}</h4>
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-base font-bold text-amber-400">฿${p.price.toLocaleString()}</span>
+                </div>
+                <div class="flex items-center gap-1 text-xs text-zinc-500">
+                  <svg class="w-3 h-3 text-amber-500 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.293z"/></svg>
+                  <span>${p.rating}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.setCategory = (id) => { currentCategory = id; renderCategories(); renderProducts(); };
+    window.scrollToProducts = () => document.getElementById('productsSection').scrollIntoView({ behavior: 'smooth' });
+
+    // Product Modal
+    let currentProductId = null;
+    const modal = document.getElementById('productModal');
+    const modalContent = document.getElementById('productModalContent');
+
+    window.openProduct = (id) => {
+      const p = products.find(x => x.id === id);
+      if (!p) return;
+      currentProductId = id;
+      document.getElementById('modalImage').textContent = p.emoji;
+      document.getElementById('modalTitle').textContent = p.name;
+      document.getElementById('modalPrice').textContent = p.price.toLocaleString();
+      document.getElementById('modalDescription').textContent = p.description;
+      document.getElementById('modalCategory').textContent = categories.find(c=>c.id===p.category)?.name || '';
+      document.getElementById('modalRating').textContent = p.rating;
+      document.getElementById('modalStock').textContent = p.stock > 20 ? 'มีสินค้าพร้อมส่ง' : `เหลือ ${p.stock} ชิ้น`;
+      
+      const features = document.getElementById('modalFeatures');
+      features.innerHTML = p.features.map(f => `
+        <div class="flex items-center gap-2 px-3 py-2 bg-zinc-800/50 border border-zinc-800 rounded-lg text-xs text-zinc-300">
+          <svg class="w-3.5 h-3.5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          <span>${f}</span>
+        </div>
+      `).join('');
+
+      updateModalWishlistIcon();
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      requestAnimationFrame(() => {
+        modal.classList.remove('opacity-0');
+        modalContent.classList.remove('scale-95');
+        modalContent.classList.add('scale-100');
       });
     };
 
-    waitForFirebase().then(() => {
-      const auth = window.firebaseAuth;
-      const db = window.firebaseDb;
-      const {
-        createUserWithEmailAndPassword,
-        signInWithEmailAndPassword,
-        signOut,
-        onAuthStateChanged,
-        updateProfile,
-        doc,
-        setDoc,
-        getDoc
-      } = window.firebaseFunctions;
+    function closeModal() {
+      modal.classList.add('opacity-0');
+      modalContent.classList.remove('scale-100');
+      modalContent.classList.add('scale-95');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }, 300);
+    }
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-      // ==========================================
-      // 1. WALL SWITCH & LOGIN UI LOGIC
-      // ==========================================
-      const wallSwitch = document.getElementById('wallSwitch');
-      const switchKnob = document.getElementById('switchKnob');
-      const switchTrackGlow = document.getElementById('switchTrackGlow');
-      const switchLed = document.getElementById('switchLed');
-      const switchLabel = document.getElementById('switchLabel');
-      
-      const loginOverlay = document.getElementById('loginOverlay');
-      const closeLoginBtn = document.getElementById('closeLoginBtn');
-      const loginTabBtn = document.getElementById('loginTabBtn');
-      const signupTabBtn = document.getElementById('signupTabBtn');
-      const loginForm = document.getElementById('loginForm');
-      const signupForm = document.getElementById('signupForm');
-      const errorMsg = document.getElementById('errorMsg');
-      const userInfo = document.getElementById('userInfo');
-      const userEmail = document.getElementById('userEmail');
-      const logoutBtn = document.getElementById('logoutBtn');
-      
-      let isSystemAccessOn = false;
+    // Wishlist
+    function updateModalWishlistIcon() {
+      const btn = document.getElementById('modalWishlistBtn');
+      const inList = wishlist.includes(currentProductId);
+      btn.innerHTML = `<svg class="w-5 h-5 ${inList ? 'text-red-500 fill-current' : 'text-zinc-400'}" fill="${inList ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>`;
+    }
 
-      // Tab Switching
-      loginTabBtn.addEventListener('click', () => {
-        loginTabBtn.classList.add('active');
-        signupTabBtn.classList.remove('active');
-        loginForm.classList.remove('hidden');
-        signupForm.classList.add('hidden');
-        hideError();
-      });
-
-      signupTabBtn.addEventListener('click', () => {
-        signupTabBtn.classList.add('active');
-        loginTabBtn.classList.remove('active');
-        signupForm.classList.remove('hidden');
-        loginForm.classList.add('hidden');
-        hideError();
-      });
-
-      function showError(message) {
-        errorMsg.textContent = message;
-        errorMsg.classList.remove('hidden');
-        setTimeout(() => errorMsg.classList.add('hidden'), 5000);
+    window.toggleWishlist = (id) => {
+      const idx = wishlist.indexOf(id);
+      if (idx > -1) {
+        wishlist.splice(idx, 1);
+        showToast('ลบออกจากรายการที่สนใจแล้ว');
+      } else {
+        wishlist.push(id);
+        showToast('บันทึกรายการที่สนใจแล้ว ❤️');
       }
+      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+      renderProducts();
+      updateModalWishlistIcon();
+      updateWishlistUI();
+    };
 
-      function hideError() {
-        errorMsg.classList.add('hidden');
-      }
-
-      function toggleSystemAccess() {
-        isSystemAccessOn = !isSystemAccessOn;
-        playClickSound(isSystemAccessOn);
-
-        if (isSystemAccessOn) {
-          switchKnob.classList.add('on');
-          switchTrackGlow.classList.remove('opacity-0');
-          switchLed.classList.remove('bg-red-900/50');
-          switchLed.classList.add('bg-amber-400', 'shadow-[0_0_10px_rgba(251,191,36,0.8)]');
-          
-          switchLabel.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]"></span> ระบบพร้อมใช้งาน`;
-          switchLabel.classList.remove('animate-pulse', 'text-zinc-500');
-          switchLabel.classList.add('text-amber-400');
-
-          loginOverlay.classList.remove('pointer-events-none', 'opacity-0', '-translate-y-full');
-          loginOverlay.classList.add('translate-y-0', 'opacity-100');
-          
-          setTimeout(() => document.getElementById('loginEmail').focus(), 600);
-
-        } else {
-          closeLoginOverlay();
-        }
-      }
-
-      function closeLoginOverlay() {
-        isSystemAccessOn = false;
-        
-        switchKnob.classList.remove('on');
-        switchTrackGlow.classList.add('opacity-0');
-        switchLed.classList.add('bg-red-900/50');
-        switchLed.classList.remove('bg-amber-400', 'shadow-[0_0_10px_rgba(251,191,36,0.8)]');
-        
-        switchLabel.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span> แตะสวิตช์เพื่อเข้าสู่ระบบ`;
-        switchLabel.classList.add('animate-pulse', 'text-zinc-500');
-        switchLabel.classList.remove('text-amber-400');
-
-        loginOverlay.classList.add('opacity-0', '-translate-y-full');
-        loginOverlay.classList.remove('translate-y-0', 'opacity-100');
-        
-        // Reset Forms
-        loginForm.reset();
-        signupForm.reset();
-        hideError();
-
-        setTimeout(() => {
-          loginOverlay.classList.add('pointer-events-none');
-        }, 500);
-      }
-
-      wallSwitch.addEventListener('click', toggleSystemAccess);
-      closeLoginBtn.addEventListener('click', closeLoginOverlay);
-
-      // ==========================================
-      // 2. FIREBASE AUTHENTICATION - IMPROVED ERROR HANDLING
-      // ==========================================
-      
-      // Handle Login
-      window.handleLogin = async function() {
-        const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        const loginBtn = document.getElementById('loginBtn');
-
-        if (!email || !password) {
-          showError('กรุณากรอกอีเมลและรหัสผ่านให้ครบถ้วน');
-          return;
-        }
-
-        loginBtn.disabled = true;
-        loginBtn.innerHTML = `<div class="spinner"></div> <span>กำลังเข้าสู่ระบบ...</span>`;
-        hideError();
-
-        try {
-          const userCredential = await signInWithEmailAndPassword(auth, email, password);
-          const user = userCredential.user;
-
-          console.log("✅ Login successful:", user.email);
-          
-          loginBtn.innerHTML = `<span class="text-emerald-700">เข้าสู่ระบบสำเร็จ!</span> <svg class="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
-          loginBtn.classList.remove('bg-amber-500', 'hover:bg-amber-400');
-          loginBtn.classList.add('bg-emerald-400', 'hover:bg-emerald-300');
-
-          setTimeout(() => {
-            closeLoginOverlay();
-            setTimeout(() => {
-              loginBtn.disabled = false;
-              loginBtn.classList.add('bg-amber-500', 'hover:bg-amber-400');
-              loginBtn.classList.remove('bg-emerald-400', 'hover:bg-emerald-300');
-            }, 500);
-          }, 1500);
-
-        } catch (error) {
-          console.error("❌ Login error:", error.code, error.message);
-          
-          // แสดง error ที่แท้จริงสำหรับ debug
-          let errorMessage = `Error: ${error.code || 'Unknown'}`;
-          
-          if (error.code === 'auth/user-not-found') {
-            errorMessage = 'ไม่พบบัญชีนี้ในระบบ กรุณาสมัครสมาชิกก่อน';
-          } else if (error.code === 'auth/wrong-password') {
-            errorMessage = 'รหัสผ่านไม่ถูกต้อง';
-          } else if (error.code === 'auth/invalid-email') {
-            errorMessage = 'รูปแบบอีเมลไม่ถูกต้อง';
-          } else if (error.code === 'auth/too-many-requests') {
-            errorMessage = 'พยายามเข้าสู่ระบบมากเกินไป กรุณารอสักครู่';
-          } else if (error.code === 'auth/network-request-failed') {
-            errorMessage = 'ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้';
-          } else if (error.code === 'auth/invalid-credential') {
-            errorMessage = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
-          } else if (error.code === 'auth/api-key-not-valid') {
-            errorMessage = 'Firebase API Key ไม่ถูกต้อง';
-          } else if (error.code === 'auth/app-not-initialized') {
-            errorMessage = 'Firebase ยังไม่ได้ตั้งค่า';
-          } else {
-            // แสดง error code จริง
-            errorMessage = `เกิดข้อผิดพลาด: ${error.code || error.message}`;
-          }
-          
-          showError(errorMessage);
-          loginBtn.disabled = false;
-          loginBtn.innerHTML = `<span>เข้าสู่ระบบ</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
-        }
-      };
-
-      // Handle Signup
-      window.handleSignup = async function() {
-        const username = document.getElementById('signupUsername').value.trim();
-        const email = document.getElementById('signupEmail').value.trim();
-        const password = document.getElementById('signupPassword').value;
-        const signupBtn = document.getElementById('signupBtn');
-
-        if (!username || !email || !password) {
-          showError('กรุณากรอกข้อมูลให้ครบถ้วน');
-          return;
-        }
-
-        if (password.length < 6) {
-          showError('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร');
-          return;
-        }
-
-        signupBtn.disabled = true;
-        signupBtn.innerHTML = `<div class="spinner"></div> <span>กำลังสมัครสมาชิก...</span>`;
-        hideError();
-
-        try {
-          // Create user in Firebase Auth
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          const user = userCredential.user;
-
-          // Update display name
-          await updateProfile(user, { displayName: username });
-
-          // Save user data to Firestore (ถ้า Firestore ไม่พร้อมก็ไม่เป็นไร)
-          try {
-            const userDocRef = doc(db, "users", user.uid);
-            await setDoc(userDocRef, {
-              username: username,
-              email: email,
-              createdAt: new Date().toISOString(),
-              lastLogin: new Date().toISOString()
-            });
-            console.log("✅ User data saved to Firestore");
-          } catch (firestoreError) {
-            console.warn("⚠️ Firestore save failed:", firestoreError);
-            // ไม่แสดง error ให้ผู้ใช้ เพราะ Auth สำเร็จแล้ว
-          }
-
-          console.log("✅ Signup successful:", user.email);
-          
-          signupBtn.innerHTML = `<span class="text-emerald-700">สมัครสมาชิกสำเร็จ!</span> <svg class="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
-          signupBtn.classList.remove('bg-amber-500', 'hover:bg-amber-400');
-          signupBtn.classList.add('bg-emerald-400', 'hover:bg-emerald-300');
-
-          setTimeout(() => {
-            closeLoginOverlay();
-            setTimeout(() => {
-              signupBtn.disabled = false;
-              signupBtn.classList.add('bg-amber-500', 'hover:bg-amber-400');
-              signupBtn.classList.remove('bg-emerald-400', 'hover:bg-emerald-300');
-            }, 500);
-          }, 1500);
-
-        } catch (error) {
-          console.error("❌ Signup error:", error.code, error.message);
-          
-          let errorMessage = `Error: ${error.code || 'Unknown'}`;
-          
-          if (error.code === 'auth/email-already-in-use') {
-            errorMessage = 'อีเมลนี้ถูกใช้งานแล้ว กรุณาล็อกอินหรือใช้อีเมลอื่น';
-          } else if (error.code === 'auth/invalid-email') {
-            errorMessage = 'รูปแบบอีเมลไม่ถูกต้อง';
-          } else if (error.code === 'auth/weak-password') {
-            errorMessage = 'รหัสผ่านอ่อนเกินไป (อย่างน้อย 6 ตัวอักษร)';
-          } else if (error.code === 'auth/network-request-failed') {
-            errorMessage = 'ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้';
-          } else if (error.code === 'auth/api-key-not-valid') {
-            errorMessage = 'Firebase API Key ไม่ถูกต้อง';
-          } else if (error.code === 'auth/app-not-initialized') {
-            errorMessage = 'Firebase ยังไม่ได้ตั้งค่า';
-          } else {
-            errorMessage = `เกิดข้อผิดพลาด: ${error.code || error.message}`;
-          }
-          
-          showError(errorMessage);
-          signupBtn.disabled = false;
-          signupBtn.innerHTML = `<span>สมัครสมาชิก</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>`;
-        }
-      };
-
-      // Handle Logout
-      logoutBtn.addEventListener('click', async () => {
-        try {
-          await signOut(auth);
-          console.log("✅ Logged out successfully");
-          userInfo.classList.add('hidden');
-        } catch (error) {
-          console.error("❌ Logout error:", error);
-        }
-      });
-
-      // Monitor Auth State
-      onAuthStateChanged(auth, async (user) => {
-        if (user) {
-          console.log("✅ User is logged in:", user.email);
-          
-          // Fetch user data from Firestore
-          try {
-            const userDocRef = doc(db, "users", user.uid);
-            const userDoc = await getDoc(userDocRef);
-            
-            if (userDoc.exists()) {
-              const userData = userDoc.data();
-              console.log("📄 User data:", userData);
-            }
-          } catch (error) {
-            console.warn("⚠️ Could not fetch user data from Firestore:", error);
-          }
-
-          // Update UI
-          userEmail.textContent = user.email;
-          userInfo.classList.remove('hidden');
-        } else {
-          console.log("️ User is logged out");
-          userInfo.classList.add('hidden');
-        }
-      });
-
-      // ==========================================
-      // 3. AUDIO LOGIC
-      // ==========================================
-      let audioCtx = null;
-
-      function initAudioContext() {
-        if (!audioCtx) {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          audioCtx = new AudioContext();
-        }
-        if (audioCtx.state === 'suspended') {
-          audioCtx.resume();
-        }
-      }
-
-      function playClickSound(turningOn) {
-        initAudioContext();
-        const now = audioCtx.currentTime;
-
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(turningOn ? 800 : 500, now);
-        osc.frequency.exponentialRampToValueAtTime(120, now + 0.03);
-
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start(now);
-        osc.stop(now + 0.03);
-
-        if (turningOn) {
-          const hum = audioCtx.createOscillator();
-          const humGain = audioCtx.createGain();
-          hum.type = "sine";
-          hum.frequency.setValueAtTime(120, now + 0.05);
-          humGain.gain.setValueAtTime(0.001, now);
-          humGain.gain.linearRampToValueAtTime(0.06, now + 0.08);
-          humGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-          hum.connect(humGain);
-          humGain.connect(audioCtx.destination);
-          hum.start(now + 0.05);
-          hum.stop(now + 0.38);
-        }
+    document.getElementById('modalWishlistBtn').addEventListener('click', () => {
+      if (currentProductId) window.toggleWishlist(currentProductId);
+    });
+    document.getElementById('addToWishlistBtn2').addEventListener('click', () => {
+      if (currentProductId && !wishlist.includes(currentProductId)) {
+        window.toggleWishlist(currentProductId);
       }
     });
+
+    function updateWishlistUI() {
+      const count = document.getElementById('wishlistCount');
+      const total = document.getElementById('wishlistTotal');
+      const items = document.getElementById('wishlistItems');
+      
+      if (wishlist.length > 0) {
+        count.textContent = wishlist.length;
+        count.classList.remove('hidden');
+      } else {
+        count.classList.add('hidden');
+      }
+      total.textContent = `${wishlist.length} รายการ`;
+
+      if (wishlist.length === 0) {
+        items.innerHTML = `
+          <div class="text-center py-12">
+            <svg class="w-16 h-16 text-zinc-700 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+            <p class="text-zinc-500 text-sm">ยังไม่มีรายการที่สนใจ</p>
+            <p class="text-zinc-600 text-xs mt-1">กดหัวใจที่สินค้าเพื่อบันทึก</p>
+          </div>
+        `;
+        return;
+      }
+
+      items.innerHTML = wishlist.map(id => {
+        const p = products.find(x => x.id === id);
+        if (!p) return '';
+        return `
+          <div class="flex items-center gap-3 p-3 bg-zinc-800/50 border border-zinc-800 rounded-xl">
+            <div class="w-14 h-14 bg-zinc-900 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">${p.emoji}</div>
+            <div class="flex-1 min-w-0">
+              <h4 class="text-sm font-semibold text-white truncate">${p.name}</h4>
+              <p class="text-xs text-amber-400 font-bold mt-0.5">฿${p.price.toLocaleString()}</p>
+            </div>
+            <button onclick="window.toggleWishlist(${p.id})" class="p-2 hover:bg-red-500/10 rounded-lg transition-all">
+              <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Wishlist Sidebar
+    const wishlistSidebar = document.getElementById('wishlistSidebar');
+    const wishlistPanel = document.getElementById('wishlistPanel');
+    document.getElementById('wishlistBtn').addEventListener('click', () => {
+      wishlistSidebar.classList.remove('hidden');
+      updateWishlistUI();
+      requestAnimationFrame(() => wishlistPanel.classList.remove('translate-x-full'));
+    });
+    function closeWishlist() {
+      wishlistPanel.classList.add('translate-x-full');
+      setTimeout(() => wishlistSidebar.classList.add('hidden'), 300);
+    }
+    document.getElementById('closeWishlistBtn').addEventListener('click', closeWishlist);
+    document.getElementById('wishlistOverlay').addEventListener('click', closeWishlist);
+
+    // Toast
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = msg;
+      t.classList.remove('hidden');
+      setTimeout(() => t.classList.add('hidden'), 2500);
+    }
+
+    // Search & Sort
+    document.getElementById('searchInput').addEventListener('input', (e) => { searchQuery = e.target.value; renderProducts(); });
+    document.getElementById('searchInputMobile').addEventListener('input', (e) => { searchQuery = e.target.value; renderProducts(); });
+    document.getElementById('sortSelect').addEventListener('change', (e) => { sortBy = e.target.value; renderProducts(); });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      if (confirm('ต้องการออกจากระบบใช่หรือไม่?')) {
+        await signOut(auth);
+      }
+    });
+
+    // ==========================================
+    // AUTH STATE - สลับหน้า
+    // ==========================================
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        loginPage.classList.add('hidden');
+        dashboardPage.classList.remove('hidden');
+        document.getElementById('displayUsername').textContent = user.displayName || 'User';
+        document.getElementById('displayEmail').textContent = user.email;
+        renderCategories();
+        renderProducts();
+        updateWishlistUI();
+      } else {
+        currentUser = null;
+        dashboardPage.classList.add('hidden');
+        loginPage.classList.remove('hidden');
+      }
+    });
+
+    // Init
+    renderCategories();
+    updateWishlistUI();
   </script>
 </body>
 </html>
