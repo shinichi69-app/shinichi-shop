@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Wall Switch Login System - Firebase Ready</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDK (v9+ Modular) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged,
+      updateProfile
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc, 
+      getDoc 
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // ==========================================
+    // FIREBASE CONFIGURATION
+    // ==========================================
+    // TODO: Replace with your Firebase config
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Export to window for use in other scripts
+    window.firebaseAuth = auth;
+    window.firebaseDb = db;
+    window.firebaseFunctions = {
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged,
+      updateProfile,
+      doc,
+      setDoc,
+      getDoc
+    };
+
+    console.log("✅ Firebase initialized successfully");
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      overscroll-behavior: none;
+    }
+    .code-font {
+      font-family: 'Fira Code', monospace;
+    }
+
+    /* Wall Switch 3D Effect */
+    .wall-switch-plate {
+      background: linear-gradient(145deg, #27272a, #18181b);
+      box-shadow: 8px 8px 16px #09090b, -8px -8px 16px #3f3f46;
+      transition: transform 0.1s ease;
+    }
+    .wall-switch-plate:active {
+      transform: scale(0.97);
+      box-shadow: 4px 4px 8px #09090b, -4px -4px 8px #3f3f46;
+    }
+    
+    .switch-knob {
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.2);
+    }
+    .switch-knob.on {
+      transform: translateX(100%);
+      background: linear-gradient(145deg, #fbbf24, #d97706);
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.6), inset 0 1px 1px rgba(255,255,255,0.4);
+    }
+
+    /* Login Overlay Transitions */
+    #loginOverlay {
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+    }
+
+    /* Tab Switcher */
+    .tab-btn {
+      transition: all 0.3s ease;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #18181b;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid #f59e0b;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Error Message */
+    .error-msg {
+      animation: shake 0.4s ease;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 text-slate-100 min-h-screen flex flex-col overflow-hidden selection:bg-amber-500 selection:text-black">
+
+  <!-- ========================================== -->
+  <!-- LOGIN OVERLAY                              -->
+  <!-- ========================================== -->
+  <div id="loginOverlay" class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/90 backdrop-blur-xl transform -translate-y-full opacity-0 pointer-events-none">
+    
+    <div class="w-full max-w-md p-8">
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.15)]">
+          <svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+          </svg>
+        </div>
+        <h2 class="text-3xl font-bold text-white mb-2">ยินดีต้อนรับ</h2>
+        <p class="text-zinc-400 text-sm">กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ</p>
+        <p id="welcomeUser" class="text-amber-400 text-xs font-mono mt-2 hidden"></p>
+      </div>
+
+      <!-- Tab Switcher -->
+      <div class="flex gap-2 mb-6 bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+        <button id="loginTabBtn" class="tab-btn active flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all">เข้าสู่ระบบ</button>
+        <button id="signupTabBtn" class="tab-btn flex-1 py-2.5 rounded-lg text-sm font-semibold text-zinc-400 transition-all">สมัครสมาชิก</button>
+      </div>
+
+      <!-- Error Message Display -->
+      <div id="errorMsg" class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm error-msg"></div>
+
+      <!-- Login Form -->
+      <form id="loginForm" class="space-y-5" onsubmit="event.preventDefault(); handleLogin();">
+        <div>
+          <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">อีเมล</label>
+          <input type="email" id="loginEmail" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" placeholder="your@email.com" autocomplete="email" required>
+        </div>
+        <div>
+          <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">รหัสผ่าน</label>
+          <input type="password" id="loginPassword" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+        
+        <button type="submit" id="loginBtn" class="w-full bg-amber-500 hover:bg-amber-400 active:scale-95 text-zinc-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 mt-2 flex items-center justify-center gap-2">
+          <span>เข้าสู่ระบบ</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </button>
+      </form>
+
+      <!-- Signup Form (Hidden by default) -->
+      <form id="signupForm" class="space-y-5 hidden" onsubmit="event.preventDefault(); handleSignup();">
+        <div>
+          <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">ชื่อผู้ใช้</label>
+          <input type="text" id="signupUsername" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" placeholder="ชื่อของคุณ" required>
+        </div>
+        <div>
+          <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">อีเมล</label>
+          <input type="email" id="signupEmail" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" placeholder="your@email.com" autocomplete="email" required>
+        </div>
+        <div>
+          <label class="block text-xs font-mono text-amber-500/80 mb-1.5 uppercase tracking-wider">รหัสผ่าน</label>
+          <input type="password" id="signupPassword" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" placeholder="อย่างน้อย 6 ตัวอักษร" autocomplete="new-password" required minlength="6">
+        </div>
+        
+        <button type="submit" id="signupBtn" class="w-full bg-amber-500 hover:bg-amber-400 active:scale-95 text-zinc-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 mt-2 flex items-center justify-center gap-2">
+          <span>สมัครสมาชิก</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+        </button>
+      </form>
+
+      <button id="closeLoginBtn" class="w-full mt-8 text-zinc-500 hover:text-white text-sm font-medium transition-colors flex items-center justify-center gap-2 py-3 border border-zinc-800 rounded-xl hover:bg-zinc-900 active:scale-95">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        ยกเลิก / ปิดสวิตช์
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MAIN CONTENT: WALL SWITCH                  -->
+  <!-- ========================================== -->
+  <main class="flex-1 flex flex-col items-center justify-center p-6 relative">
+    
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-900/50 via-zinc-950 to-zinc-950 pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col items-center gap-8">
+      
+      <div class="text-center space-y-1">
+        <div class="text-zinc-500 font-mono text-xs tracking-[0.2em] uppercase">System Access Control</div>
+        <div class="text-zinc-300 font-semibold text-lg">Security Gate</div>
+      </div>
+      
+      <!-- The Wall Switch -->
+      <div id="wallSwitch" class="wall-switch-plate relative w-40 h-24 rounded-2xl border border-zinc-700/50 cursor-pointer">
+        <div id="switchTrackGlow" class="absolute inset-0 rounded-2xl bg-amber-500/10 opacity-0 transition-opacity duration-300"></div>
+        
+        <div id="switchKnob" class="switch-knob absolute top-2 left-2 w-20 h-20 rounded-xl bg-gradient-to-b from-zinc-400 to-zinc-600 flex items-center justify-center">
+          <div class="w-4 h-4 rounded-full bg-zinc-800 shadow-inner"></div>
+        </div>
+        
+        <div id="switchLed" class="absolute bottom-4 right-4 w-2.5 h-2.5 rounded-full bg-red-900/50 transition-all duration-300"></div>
+      </div>
+      
+      <div id="switchLabel" class="text-xs text-zinc-500 font-mono animate-pulse flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span>
+        แตะสวิตช์เพื่อเข้าสู่ระบบ
+      </div>
+
+      <!-- User Info (Shown when logged in) -->
+      <div id="userInfo" class="hidden mt-4 p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl text-center">
+        <p class="text-zinc-400 text-xs mb-1">เข้าสู่ระบบในฐานะ</p>
+        <p id="userEmail" class="text-amber-400 font-mono text-sm"></p>
+        <button id="logoutBtn" class="mt-3 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-semibold rounded-lg border border-red-500/30 transition-all">
+          ล็อกเอาท์
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- JavaScript Logic -->
+  <script type="module">
+    // Wait for Firebase to initialize
+    const waitForFirebase = () => {
+      return new Promise((resolve) => {
+        const check = () => {
+          if (window.firebaseAuth && window.firebaseFunctions) {
+            resolve();
+          } else {
+            setTimeout(check, 100);
+          }
+        };
+        check();
+      });
+    };
+
+    waitForFirebase().then(() => {
+      const auth = window.firebaseAuth;
+      const db = window.firebaseDb;
+      const {
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut,
+        onAuthStateChanged,
+        updateProfile,
+        doc,
+        setDoc,
+        getDoc
+      } = window.firebaseFunctions;
+
+      // ==========================================
+      // 1. WALL SWITCH & LOGIN UI LOGIC
+      // ==========================================
+      const wallSwitch = document.getElementById('wallSwitch');
+      const switchKnob = document.getElementById('switchKnob');
+      const switchTrackGlow = document.getElementById('switchTrackGlow');
+      const switchLed = document.getElementById('switchLed');
+      const switchLabel = document.getElementById('switchLabel');
+      
+      const loginOverlay = document.getElementById('loginOverlay');
+      const closeLoginBtn = document.getElementById('closeLoginBtn');
+      const loginTabBtn = document.getElementById('loginTabBtn');
+      const signupTabBtn = document.getElementById('signupTabBtn');
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      const errorMsg = document.getElementById('errorMsg');
+      const userInfo = document.getElementById('userInfo');
+      const userEmail = document.getElementById('userEmail');
+      const logoutBtn = document.getElementById('logoutBtn');
+      
+      let isSystemAccessOn = false;
+
+      // Tab Switching
+      loginTabBtn.addEventListener('click', () => {
+        loginTabBtn.classList.add('active');
+        signupTabBtn.classList.remove('active');
+        loginForm.classList.remove('hidden');
+        signupForm.classList.add('hidden');
+        hideError();
+      });
+
+      signupTabBtn.addEventListener('click', () => {
+        signupTabBtn.classList.add('active');
+        loginTabBtn.classList.remove('active');
+        signupForm.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+        hideError();
+      });
+
+      function showError(message) {
+        errorMsg.textContent = message;
+        errorMsg.classList.remove('hidden');
+        setTimeout(() => errorMsg.classList.add('hidden'), 5000);
+      }
+
+      function hideError() {
+        errorMsg.classList.add('hidden');
+      }
+
+      function toggleSystemAccess() {
+        isSystemAccessOn = !isSystemAccessOn;
+        playClickSound(isSystemAccessOn);
+
+        if (isSystemAccessOn) {
+          switchKnob.classList.add('on');
+          switchTrackGlow.classList.remove('opacity-0');
+          switchLed.classList.remove('bg-red-900/50');
+          switchLed.classList.add('bg-amber-400', 'shadow-[0_0_10px_rgba(251,191,36,0.8)]');
+          
+          switchLabel.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]"></span> ระบบพร้อมใช้งาน`;
+          switchLabel.classList.remove('animate-pulse', 'text-zinc-500');
+          switchLabel.classList.add('text-amber-400');
+
+          loginOverlay.classList.remove('pointer-events-none', 'opacity-0', '-translate-y-full');
+          loginOverlay.classList.add('translate-y-0', 'opacity-100');
+          
+          setTimeout(() => document.getElementById('loginEmail').focus(), 600);
+
+        } else {
+          closeLoginOverlay();
+        }
+      }
+
+      function closeLoginOverlay() {
+        isSystemAccessOn = false;
+        
+        switchKnob.classList.remove('on');
+        switchTrackGlow.classList.add('opacity-0');
+        switchLed.classList.add('bg-red-900/50');
+        switchLed.classList.remove('bg-amber-400', 'shadow-[0_0_10px_rgba(251,191,36,0.8)]');
+        
+        switchLabel.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span> แตะสวิตช์เพื่อเข้าสู่ระบบ`;
+        switchLabel.classList.add('animate-pulse', 'text-zinc-500');
+        switchLabel.classList.remove('text-amber-400');
+
+        loginOverlay.classList.add('opacity-0', '-translate-y-full');
+        loginOverlay.classList.remove('translate-y-0', 'opacity-100');
+        
+        // Reset Forms
+        loginForm.reset();
+        signupForm.reset();
+        hideError();
+
+        setTimeout(() => {
+          loginOverlay.classList.add('pointer-events-none');
+        }, 500);
+      }
+
+      wallSwitch.addEventListener('click', toggleSystemAccess);
+      closeLoginBtn.addEventListener('click', closeLoginOverlay);
+
+      // ==========================================
+      // 2. FIREBASE AUTHENTICATION
+      // ==========================================
+      
+      // Handle Login
+      window.handleLogin = async function() {
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const loginBtn = document.getElementById('loginBtn');
+
+        if (!email || !password) {
+          showError('กรุณากรอกอีเมลและรหัสผ่านให้ครบถ้วน');
+          return;
+        }
+
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = `<div class="spinner"></div> <span>กำลังเข้าสู่ระบบ...</span>`;
+        hideError();
+
+        try {
+          const userCredential = await signInWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+
+          console.log("✅ Login successful:", user.email);
+          
+          loginBtn.innerHTML = `<span class="text-emerald-700">เข้าสู่ระบบสำเร็จ!</span> <svg class="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+          loginBtn.classList.remove('bg-amber-500', 'hover:bg-amber-400');
+          loginBtn.classList.add('bg-emerald-400', 'hover:bg-emerald-300');
+
+          setTimeout(() => {
+            closeLoginOverlay();
+            setTimeout(() => {
+              loginBtn.disabled = false;
+              loginBtn.classList.add('bg-amber-500', 'hover:bg-amber-400');
+              loginBtn.classList.remove('bg-emerald-400', 'hover:bg-emerald-300');
+            }, 500);
+          }, 1500);
+
+        } catch (error) {
+          console.error("❌ Login error:", error.code, error.message);
+          
+          let errorMessage = 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ';
+          if (error.code === 'auth/user-not-found') errorMessage = 'ไม่พบบัญชีนี้ในระบบ';
+          else if (error.code === 'auth/wrong-password') errorMessage = 'รหัสผ่านไม่ถูกต้อง';
+          else if (error.code === 'auth/invalid-email') errorMessage = 'รูปแบบอีเมลไม่ถูกต้อง';
+          else if (error.code === 'auth/too-many-requests') errorMessage = 'พยายามเข้าสู่ระบบมากเกินไป กรุณาลองใหม่ภายหลัง';
+          
+          showError(errorMessage);
+          loginBtn.disabled = false;
+          loginBtn.innerHTML = `<span>เข้าสู่ระบบ</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
+        }
+      };
+
+      // Handle Signup
+      window.handleSignup = async function() {
+        const username = document.getElementById('signupUsername').value.trim();
+        const email = document.getElementById('signupEmail').value.trim();
+        const password = document.getElementById('signupPassword').value;
+        const signupBtn = document.getElementById('signupBtn');
+
+        if (!username || !email || !password) {
+          showError('กรุณากรอกข้อมูลให้ครบถ้วน');
+          return;
+        }
+
+        if (password.length < 6) {
+          showError('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร');
+          return;
+        }
+
+        signupBtn.disabled = true;
+        signupBtn.innerHTML = `<div class="spinner"></div> <span>กำลังสมัครสมาชิก...</span>`;
+        hideError();
+
+        try {
+          // Create user in Firebase Auth
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+
+          // Update display name
+          await updateProfile(user, { displayName: username });
+
+          // Save user data to Firestore
+          const userDocRef = doc(db, "users", user.uid);
+          await setDoc(userDocRef, {
+            username: username,
+            email: email,
+            createdAt: new Date().toISOString(),
+            lastLogin: new Date().toISOString()
+          });
+
+          console.log("✅ Signup successful:", user.email);
+          
+          signupBtn.innerHTML = `<span class="text-emerald-700">สมัครสมาชิกสำเร็จ!</span> <svg class="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+          signupBtn.classList.remove('bg-amber-500', 'hover:bg-amber-400');
+          signupBtn.classList.add('bg-emerald-400', 'hover:bg-emerald-300');
+
+          setTimeout(() => {
+            closeLoginOverlay();
+            setTimeout(() => {
+              signupBtn.disabled = false;
+              signupBtn.classList.add('bg-amber-500', 'hover:bg-amber-400');
+              signupBtn.classList.remove('bg-emerald-400', 'hover:bg-emerald-300');
+            }, 500);
+          }, 1500);
+
+        } catch (error) {
+          console.error("❌ Signup error:", error.code, error.message);
+          
+          let errorMessage = 'เกิดข้อผิดพลาดในการสมัครสมาชิก';
+          if (error.code === 'auth/email-already-in-use') errorMessage = 'อีเมลนี้ถูกใช้งานแล้ว';
+          else if (error.code === 'auth/invalid-email') errorMessage = 'รูปแบบอีเมลไม่ถูกต้อง';
+          else if (error.code === 'auth/weak-password') errorMessage = 'รหัสผ่านอ่อนเกินไป (อย่างน้อย 6 ตัวอักษร)';
+          
+          showError(errorMessage);
+          signupBtn.disabled = false;
+          signupBtn.innerHTML = `<span>สมัครสมาชิก</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>`;
+        }
+      };
+
+      // Handle Logout
+      logoutBtn.addEventListener('click', async () => {
+        try {
+          await signOut(auth);
+          console.log("✅ Logged out successfully");
+          userInfo.classList.add('hidden');
+        } catch (error) {
+          console.error("❌ Logout error:", error);
+        }
+      });
+
+      // Monitor Auth State
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          console.log("✅ User is logged in:", user.email);
+          
+          // Fetch user data from Firestore
+          const userDocRef = doc(db, "users", user.uid);
+          const userDoc = await getDoc(userDocRef);
+          
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            console.log("📄 User data:", userData);
+          }
+
+          // Update UI
+          userEmail.textContent = user.email;
+          userInfo.classList.remove('hidden');
+        } else {
+          console.log("ℹ️ User is logged out");
+          userInfo.classList.add('hidden');
+        }
+      });
+
+      // ==========================================
+      // 3. AUDIO LOGIC
+      // ==========================================
+      let audioCtx = null;
+
+      function initAudioContext() {
+        if (!audioCtx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          audioCtx = new AudioContext();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      }
+
+      function playClickSound(turningOn) {
+        initAudioContext();
+        const now = audioCtx.currentTime;
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(turningOn ? 800 : 500, now);
+        osc.frequency.exponentialRampToValueAtTime(120, now + 0.03);
+
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.03);
+
+        if (turningOn) {
+          const hum = audioCtx.createOscillator();
+          const humGain = audioCtx.createGain();
+          hum.type = "sine";
+          hum.frequency.setValueAtTime(120, now + 0.05);
+          humGain.gain.setValueAtTime(0.001, now);
+          humGain.gain.linearRampToValueAtTime(0.06, now + 0.08);
+          humGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          hum.connect(humGain);
+          humGain.connect(audioCtx.destination);
+          hum.start(now + 0.05);
+          hum.stop(now + 0.38);
+        }
+      }
+    });
+  </script>
+</body>
+</html>
